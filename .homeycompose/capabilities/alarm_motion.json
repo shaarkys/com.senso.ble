@@ -1,0 +1,22 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Motion",
+    "nl": "Beweging",
+    "de": "Bewegung",
+    "fr": "Mouvement",
+    "it": "Movimento",
+    "sv": "Rorelse",
+    "no": "Bevegelse",
+    "es": "Movimiento",
+    "da": "Bevaegelse",
+    "ru": "Dvizhenie",
+    "pl": "Ruch",
+    "ko": "움직임"
+  },
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/capability_alert.svg"
+}

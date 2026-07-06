@@ -1,0 +1,22 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Incline Anomaly",
+    "nl": "Hellingafwijking",
+    "de": "Neigungsanomalie",
+    "fr": "Anomalie d inclinaison",
+    "it": "Anomalia inclinazione",
+    "sv": "Lutningsavvikelse",
+    "no": "Helningsavvik",
+    "es": "Anomalia de inclinacion",
+    "da": "Haeldningsanomali",
+    "ru": "Anomaliya naklona",
+    "pl": "Anomalia nachylenia",
+    "ko": "기울기 이상"
+  },
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/capability_alert.svg"
+}

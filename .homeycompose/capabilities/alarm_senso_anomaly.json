@@ -1,0 +1,22 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Anomaly",
+    "nl": "Afwijking",
+    "de": "Anomalie",
+    "fr": "Anomalie",
+    "it": "Anomalia",
+    "sv": "Avvikelse",
+    "no": "Avvik",
+    "es": "Anomalia",
+    "da": "Anomali",
+    "ru": "Anomaliya",
+    "pl": "Anomalia",
+    "ko": "이상"
+  },
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/capability_alert.svg"
+}

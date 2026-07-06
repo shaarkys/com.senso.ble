@@ -8,15 +8,39 @@
     "local"
   ],
   "name": {
-    "en": "Senso"
+    "en": "Senso4s",
+    "nl": "Senso4s",
+    "de": "Senso4s",
+    "fr": "Senso4s",
+    "it": "Senso4s",
+    "sv": "Senso4s",
+    "no": "Senso4s",
+    "es": "Senso4s",
+    "da": "Senso4s",
+    "ru": "Senso4s",
+    "pl": "Senso4s",
+    "ko": "Senso4s"
   },
   "description": {
-    "en": "Adds support for Senso4s devices."
+    "en": "Never run out of gas again.",
+    "nl": "Nooit meer zonder gas.",
+    "de": "Nie wieder ohne Gas.",
+    "fr": "Ne tombez plus jamais en panne de gaz.",
+    "it": "Non restare mai piu senza gas.",
+    "sv": "Fa aldrig slut pa gas igen.",
+    "no": "Ga aldri tom for gass igjen.",
+    "es": "No vuelvas a quedarte sin gas.",
+    "da": "Lob aldrig tor for gas igen.",
+    "ru": "Nikogda bolshe ne ostavaytes bez gaza.",
+    "pl": "Nigdy wiecej nie zabraknie Ci gazu.",
+    "ko": "다시는 가스가 떨어지지 않게 하세요."
   },
   "category": [
     "appliances"
   ],
-  "permissions": [],
+  "permissions": [
+    "homey:wireless:ble"
+  ],
   "images": {
     "small": "/assets/images/small.png",
     "large": "/assets/images/large.png",
@@ -25,5 +49,6 @@
   "author": {
     "name": "Bretislav Kubesa",
     "email": "bretislav.kubesa@gmail.com"
-  }
+  },
+  "brandColor": "#1F7E68"
 }

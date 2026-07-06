@@ -1,0 +1,22 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Tank Empty",
+    "nl": "Tank leeg",
+    "de": "Tank leer",
+    "fr": "Reservoir vide",
+    "it": "Serbatoio vuoto",
+    "sv": "Tank tom",
+    "no": "Tank tom",
+    "es": "Deposito vacio",
+    "da": "Tank tom",
+    "ru": "Ballon pust",
+    "pl": "Butla pusta",
+    "ko": "탱크 비어 있음"
+  },
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/capability_gas_tank.svg"
+}

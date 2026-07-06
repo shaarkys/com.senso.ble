@@ -1,0 +1,22 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Device Error",
+    "nl": "Apparaatfout",
+    "de": "Geratefehler",
+    "fr": "Erreur appareil",
+    "it": "Errore dispositivo",
+    "sv": "Enhetsfel",
+    "no": "Enhetsfeil",
+    "es": "Error del dispositivo",
+    "da": "Enhedsfejl",
+    "ru": "Oshibka ustroystva",
+    "pl": "Blad urzadzenia",
+    "ko": "장치 오류"
+  },
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/capability_alert.svg"
+}

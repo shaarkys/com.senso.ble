@@ -1,0 +1,13 @@
+Senso4s Homey App
+
+This app includes Senso4s BLE protocol parsing and characteristic handling
+adapted from the Senso4s Home Assistant integration:
+
+  https://github.com/ksanislo/senso4s_ble
+
+The referenced integration is Copyright 2026 Ken Sanislo and licensed under
+the Apache License, Version 2.0.
+
+Changes for this app include porting the parser and BLE client behavior from
+Python/Home Assistant to TypeScript/Homey SDK 3, mapping values to Homey
+capabilities, and adapting the pairing and polling lifecycle for Homey.

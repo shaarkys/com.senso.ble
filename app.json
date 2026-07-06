@@ -9,15 +9,39 @@
     "local"
   ],
   "name": {
-    "en": "Senso"
+    "en": "Senso4s",
+    "nl": "Senso4s",
+    "de": "Senso4s",
+    "fr": "Senso4s",
+    "it": "Senso4s",
+    "sv": "Senso4s",
+    "no": "Senso4s",
+    "es": "Senso4s",
+    "da": "Senso4s",
+    "ru": "Senso4s",
+    "pl": "Senso4s",
+    "ko": "Senso4s"
   },
   "description": {
-    "en": "Adds support for Senso4s devices."
+    "en": "Never run out of gas again.",
+    "nl": "Nooit meer zonder gas.",
+    "de": "Nie wieder ohne Gas.",
+    "fr": "Ne tombez plus jamais en panne de gaz.",
+    "it": "Non restare mai piu senza gas.",
+    "sv": "Fa aldrig slut pa gas igen.",
+    "no": "Ga aldri tom for gass igjen.",
+    "es": "No vuelvas a quedarte sin gas.",
+    "da": "Lob aldrig tor for gas igen.",
+    "ru": "Nikogda bolshe ne ostavaytes bez gaza.",
+    "pl": "Nigdy wiecej nie zabraknie Ci gazu.",
+    "ko": "다시는 가스가 떨어지지 않게 하세요."
   },
   "category": [
     "appliances"
   ],
-  "permissions": [],
+  "permissions": [
+    "homey:wireless:ble"
+  ],
   "images": {
     "small": "/assets/images/small.png",
     "large": "/assets/images/large.png",
@@ -26,5 +50,485 @@
   "author": {
     "name": "Bretislav Kubesa",
     "email": "bretislav.kubesa@gmail.com"
+  },
+  "brandColor": "#1F7E68",
+  "drivers": [
+    {
+      "name": {
+        "en": "Senso4s",
+        "nl": "Senso4s",
+        "de": "Senso4s",
+        "fr": "Senso4s",
+        "it": "Senso4s",
+        "sv": "Senso4s",
+        "no": "Senso4s",
+        "es": "Senso4s",
+        "da": "Senso4s",
+        "ru": "Senso4s",
+        "pl": "Senso4s",
+        "ko": "Senso4s"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "measure_battery",
+        "alarm_battery",
+        "alarm_connectivity",
+        "alarm_tank_empty",
+        "alarm_needs_calibration",
+        "alarm_device_error",
+        "measure_gas_level",
+        "measure_gas_remaining",
+        "measure_rssi"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "ble"
+      ],
+      "images": {
+        "small": "/drivers/senso4s/assets/images/small.png",
+        "large": "/drivers/senso4s/assets/images/large.png",
+        "xlarge": "/drivers/senso4s/assets/images/xlarge.png"
+      },
+      "energy": {
+        "batteries": [
+          "AA",
+          "AA"
+        ]
+      },
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "senso4s",
+      "settings": [
+        {
+          "id": "connection_interval_minutes",
+          "type": "number",
+          "label": {
+            "en": "Connection Interval",
+            "nl": "Verbindingsinterval",
+            "de": "Verbindungsintervall",
+            "fr": "Intervalle de connexion",
+            "it": "Intervallo di connessione",
+            "sv": "Anslutningsintervall",
+            "no": "Tilkoblingsintervall",
+            "es": "Intervalo de conexion",
+            "da": "Forbindelsesinterval",
+            "ru": "Interval podklyucheniya",
+            "pl": "Interwal polaczenia",
+            "ko": "연결 간격"
+          },
+          "value": 15,
+          "min": 5,
+          "max": 1440,
+          "hint": {
+            "en": "Minutes between short active BLE connections for direct characteristic reads. Advertisement updates are still used between connections.",
+            "nl": "Minuten tussen korte actieve BLE-verbindingen voor directe characteristic-uitlezingen. Advertentie-updates worden tussendoor nog steeds gebruikt.",
+            "de": "Minuten zwischen kurzen aktiven BLE-Verbindungen fur direkte Characteristic-Lesevorgange. Advertisement-Updates werden dazwischen weiterhin verwendet.",
+            "fr": "Minutes entre de courtes connexions BLE actives pour lire directement les caracteristiques. Les mises a jour par annonce restent utilisees entre les connexions.",
+            "it": "Minuti tra brevi connessioni BLE attive per leggere direttamente le caratteristiche. Gli aggiornamenti dagli annunci sono ancora usati tra le connessioni.",
+            "sv": "Minuter mellan korta aktiva BLE-anslutningar for direkta characteristic-lasningar. Annonsuppdateringar anvands fortfarande mellan anslutningar.",
+            "no": "Minutter mellom korte aktive BLE-tilkoblinger for direkte characteristic-lesing. Annonseoppdateringer brukes fortsatt mellom tilkoblinger.",
+            "es": "Minutos entre conexiones BLE activas breves para lecturas directas de caracteristicas. Las actualizaciones de anuncios se siguen usando entre conexiones.",
+            "da": "Minutter mellem korte aktive BLE-forbindelser til direkte characteristic-aflaesninger. Annonceopdateringer bruges stadig mellem forbindelser.",
+            "ru": "Minuty mezhdu korotkimi aktivnymi BLE-podklyucheniyami dlya pryamogo chteniya harakteristik. Mezhdu podklyucheniyami vse eshche ispolzuyutsya obnovleniya reklamnyh dannyh.",
+            "pl": "Minuty miedzy krotkimi aktywnymi polaczeniami BLE do bezposredniego odczytu characteristic. Aktualizacje z reklam BLE sa nadal uzywane miedzy polaczeniami.",
+            "ko": "특성 값을 직접 읽기 위한 짧은 활성 BLE 연결 사이의 시간(분)입니다. 연결 사이에는 광고 업데이트가 계속 사용됩니다."
+          },
+          "units": {
+            "en": "minutes",
+            "nl": "minuten",
+            "de": "Minuten",
+            "fr": "minutes",
+            "it": "minuti",
+            "sv": "minuter",
+            "no": "minutter",
+            "es": "minutos",
+            "da": "minutter",
+            "ru": "minuty",
+            "pl": "minuty",
+            "ko": "분"
+          }
+        },
+        {
+          "id": "gas_capacity_kg",
+          "type": "number",
+          "label": {
+            "en": "Gas Capacity",
+            "nl": "Gascapaciteit",
+            "de": "Gaskapazitat",
+            "fr": "Capacite de gaz",
+            "it": "Capacita gas",
+            "sv": "Gaskapacitet",
+            "no": "Gasskapasitet",
+            "es": "Capacidad de gas",
+            "da": "Gaskapacitet",
+            "ru": "Emkost gaza",
+            "pl": "Pojemnosc gazu",
+            "ko": "가스 용량"
+          },
+          "value": 11,
+          "min": 1,
+          "max": 30,
+          "hint": {
+            "en": "Cylinder gas capacity used to calculate remaining gas weight from the advertised percentage.",
+            "nl": "Gascapaciteit van de cilinder om het resterende gasgewicht te berekenen op basis van het geadverteerde percentage.",
+            "de": "Gaskapazitat der Flasche zur Berechnung des verbleibenden Gasgewichts aus dem gemeldeten Prozentwert.",
+            "fr": "Capacite de gaz de la bouteille utilisee pour calculer le poids de gaz restant a partir du pourcentage annonce.",
+            "it": "Capacita della bombola usata per calcolare il peso del gas rimanente dalla percentuale annunciata.",
+            "sv": "Gasflaskans kapacitet som anvands for att berakna aterstaende gasvikt fran den annonserade procenten.",
+            "no": "Gassflaskens kapasitet brukt til a beregne gjenværende gassvekt fra annonsert prosent.",
+            "es": "Capacidad de gas de la bombona usada para calcular el peso restante a partir del porcentaje anunciado.",
+            "da": "Gasflaskens kapacitet brugt til at beregne resterende gasvaegt fra den annoncerede procent.",
+            "ru": "Emkost gazovogo ballona dlya rascheta ostavshegosya vesa gaza po peredavaemomu procentu.",
+            "pl": "Pojemnosc butli uzywana do obliczania pozostalej masy gazu z reklamowanego procentu.",
+            "ko": "광고된 백분율로 남은 가스 무게를 계산하는 데 사용할 실린더 가스 용량입니다."
+          },
+          "units": {
+            "en": "kg",
+            "nl": "kg",
+            "de": "kg",
+            "fr": "kg",
+            "it": "kg",
+            "sv": "kg",
+            "no": "kg",
+            "es": "kg",
+            "da": "kg",
+            "ru": "kg",
+            "pl": "kg",
+            "ko": "kg"
+          }
+        },
+        {
+          "id": "low_level_threshold",
+          "type": "number",
+          "label": {
+            "en": "Low Gas Threshold",
+            "nl": "Drempel voor weinig gas",
+            "de": "Schwellwert fur wenig Gas",
+            "fr": "Seuil de gaz faible",
+            "it": "Soglia gas basso",
+            "sv": "Grans for lag gasniva",
+            "no": "Grense for lavt gassniva",
+            "es": "Umbral de gas bajo",
+            "da": "Graense for lav gasstand",
+            "ru": "Porog nizkogo urovnya gaza",
+            "pl": "Prog niskiego poziomu gazu",
+            "ko": "낮은 가스 임계값"
+          },
+          "value": 10,
+          "min": 0,
+          "max": 100,
+          "hint": {
+            "en": "Tank empty alarm turns on when gas level is at or below this percentage.",
+            "nl": "Het alarm Tank leeg gaat aan wanneer het gasniveau op of onder dit percentage komt.",
+            "de": "Der Tank-leer-Alarm wird aktiviert, wenn der Gasstand diesen Prozentwert erreicht oder unterschreitet.",
+            "fr": "L alarme de reservoir vide s active lorsque le niveau de gaz est egal ou inferieur a ce pourcentage.",
+            "it": "L allarme serbatoio vuoto si attiva quando il livello del gas e pari o inferiore a questa percentuale.",
+            "sv": "Larmet for tom tank aktiveras nar gasnivan ar pa eller under denna procent.",
+            "no": "Alarmen for tom tank slas pa nar gassnivaet er pa eller under denne prosenten.",
+            "es": "La alarma de deposito vacio se activa cuando el nivel de gas esta en este porcentaje o por debajo.",
+            "da": "Alarmen for tom tank aktiveres, nar gasniveauet er pa eller under denne procent.",
+            "ru": "Signal pustogo ballona vklyuchaetsya, kogda uroven gaza raven etomu procentu ili nizhe.",
+            "pl": "Alarm pustej butli wlacza sie, gdy poziom gazu jest rowny tej wartosci procentowej lub nizszy.",
+            "ko": "가스 수준이 이 백분율 이하이면 빈 탱크 알람이 켜집니다."
+          },
+          "units": {
+            "en": "%",
+            "nl": "%",
+            "de": "%",
+            "fr": "%",
+            "it": "%",
+            "sv": "%",
+            "no": "%",
+            "es": "%",
+            "da": "%",
+            "ru": "%",
+            "pl": "%",
+            "ko": "%"
+          }
+        }
+      ]
+    }
+  ],
+  "capabilities": {
+    "alarm_device_error": {
+      "type": "boolean",
+      "title": {
+        "en": "Device Error",
+        "nl": "Apparaatfout",
+        "de": "Geratefehler",
+        "fr": "Erreur appareil",
+        "it": "Errore dispositivo",
+        "sv": "Enhetsfel",
+        "no": "Enhetsfeil",
+        "es": "Error del dispositivo",
+        "da": "Enhedsfejl",
+        "ru": "Oshibka ustroystva",
+        "pl": "Blad urzadzenia",
+        "ko": "장치 오류"
+      },
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capability_alert.svg"
+    },
+    "alarm_incline_anomaly": {
+      "type": "boolean",
+      "title": {
+        "en": "Incline Anomaly",
+        "nl": "Hellingafwijking",
+        "de": "Neigungsanomalie",
+        "fr": "Anomalie d inclinaison",
+        "it": "Anomalia inclinazione",
+        "sv": "Lutningsavvikelse",
+        "no": "Helningsavvik",
+        "es": "Anomalia de inclinacion",
+        "da": "Haeldningsanomali",
+        "ru": "Anomaliya naklona",
+        "pl": "Anomalia nachylenia",
+        "ko": "기울기 이상"
+      },
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capability_alert.svg"
+    },
+    "alarm_motion": {
+      "type": "boolean",
+      "title": {
+        "en": "Motion",
+        "nl": "Beweging",
+        "de": "Bewegung",
+        "fr": "Mouvement",
+        "it": "Movimento",
+        "sv": "Rorelse",
+        "no": "Bevegelse",
+        "es": "Movimiento",
+        "da": "Bevaegelse",
+        "ru": "Dvizhenie",
+        "pl": "Ruch",
+        "ko": "움직임"
+      },
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capability_alert.svg"
+    },
+    "alarm_needs_calibration": {
+      "type": "boolean",
+      "title": {
+        "en": "Needs Calibration",
+        "nl": "Kalibratie nodig",
+        "de": "Kalibrierung erforderlich",
+        "fr": "Calibration requise",
+        "it": "Calibrazione necessaria",
+        "sv": "Kravs kalibrering",
+        "no": "Trenger kalibrering",
+        "es": "Necesita calibracion",
+        "da": "Kraever kalibrering",
+        "ru": "Trebuyetsya kalibrovka",
+        "pl": "Wymaga kalibracji",
+        "ko": "보정 필요"
+      },
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capability_scale.svg"
+    },
+    "alarm_senso_anomaly": {
+      "type": "boolean",
+      "title": {
+        "en": "Anomaly",
+        "nl": "Afwijking",
+        "de": "Anomalie",
+        "fr": "Anomalie",
+        "it": "Anomalia",
+        "sv": "Avvikelse",
+        "no": "Avvik",
+        "es": "Anomalia",
+        "da": "Anomali",
+        "ru": "Anomaliya",
+        "pl": "Anomalia",
+        "ko": "이상"
+      },
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capability_alert.svg"
+    },
+    "alarm_tank_empty": {
+      "type": "boolean",
+      "title": {
+        "en": "Tank Empty",
+        "nl": "Tank leeg",
+        "de": "Tank leer",
+        "fr": "Reservoir vide",
+        "it": "Serbatoio vuoto",
+        "sv": "Tank tom",
+        "no": "Tank tom",
+        "es": "Deposito vacio",
+        "da": "Tank tom",
+        "ru": "Ballon pust",
+        "pl": "Butla pusta",
+        "ko": "탱크 비어 있음"
+      },
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capability_gas_tank.svg"
+    },
+    "alarm_temperature_anomaly": {
+      "type": "boolean",
+      "title": {
+        "en": "Temperature Anomaly",
+        "nl": "Temperatuurafwijking",
+        "de": "Temperaturanomalie",
+        "fr": "Anomalie de temperature",
+        "it": "Anomalia temperatura",
+        "sv": "Temperaturavvikelse",
+        "no": "Temperaturavvik",
+        "es": "Anomalia de temperatura",
+        "da": "Temperaturanomali",
+        "ru": "Anomaliya temperatury",
+        "pl": "Anomalia temperatury",
+        "ko": "온도 이상"
+      },
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capability_alert.svg"
+    },
+    "measure_gas_level": {
+      "type": "number",
+      "title": {
+        "en": "Gas Level",
+        "nl": "Gasniveau",
+        "de": "Gasstand",
+        "fr": "Niveau de gaz",
+        "it": "Livello gas",
+        "sv": "Gasniva",
+        "no": "Gassniva",
+        "es": "Nivel de gas",
+        "da": "Gasniveau",
+        "ru": "Uroven gaza",
+        "pl": "Poziom gazu",
+        "ko": "가스 수준"
+      },
+      "units": {
+        "en": "%",
+        "nl": "%",
+        "de": "%",
+        "fr": "%",
+        "it": "%",
+        "sv": "%",
+        "no": "%",
+        "es": "%",
+        "da": "%",
+        "ru": "%",
+        "pl": "%",
+        "ko": "%"
+      },
+      "decimals": 0,
+      "min": 0,
+      "max": 100,
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/capability_gas_tank.svg"
+    },
+    "measure_gas_remaining": {
+      "type": "number",
+      "title": {
+        "en": "Gas Remaining",
+        "nl": "Resterend gas",
+        "de": "Verbleibendes Gas",
+        "fr": "Gaz restant",
+        "it": "Gas rimanente",
+        "sv": "Aterstaende gas",
+        "no": "Gjenværende gass",
+        "es": "Gas restante",
+        "da": "Resterende gas",
+        "ru": "Ostavshiysya gaz",
+        "pl": "Pozostaly gaz",
+        "ko": "남은 가스"
+      },
+      "units": {
+        "en": "kg",
+        "nl": "kg",
+        "de": "kg",
+        "fr": "kg",
+        "it": "kg",
+        "sv": "kg",
+        "no": "kg",
+        "es": "kg",
+        "da": "kg",
+        "ru": "kg",
+        "pl": "kg",
+        "ko": "kg"
+      },
+      "decimals": 2,
+      "min": 0,
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/capability_gas_tank.svg"
+    },
+    "measure_rssi": {
+      "type": "number",
+      "title": {
+        "en": "RSSI",
+        "nl": "RSSI",
+        "de": "RSSI",
+        "fr": "RSSI",
+        "it": "RSSI",
+        "sv": "RSSI",
+        "no": "RSSI",
+        "es": "RSSI",
+        "da": "RSSI",
+        "ru": "RSSI",
+        "pl": "RSSI",
+        "ko": "RSSI"
+      },
+      "units": {
+        "en": "dBm",
+        "nl": "dBm",
+        "de": "dBm",
+        "fr": "dBm",
+        "it": "dBm",
+        "sv": "dBm",
+        "no": "dBm",
+        "es": "dBm",
+        "da": "dBm",
+        "ru": "dBm",
+        "pl": "dBm",
+        "ko": "dBm"
+      },
+      "decimals": 0,
+      "min": -100,
+      "max": 0,
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/capability_rssi.svg"
+    }
   }
 }

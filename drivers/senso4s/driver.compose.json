@@ -1,0 +1,58 @@
+{
+  "name": {
+    "en": "Senso4s",
+    "nl": "Senso4s",
+    "de": "Senso4s",
+    "fr": "Senso4s",
+    "it": "Senso4s",
+    "sv": "Senso4s",
+    "no": "Senso4s",
+    "es": "Senso4s",
+    "da": "Senso4s",
+    "ru": "Senso4s",
+    "pl": "Senso4s",
+    "ko": "Senso4s"
+  },
+  "class": "sensor",
+  "capabilities": [
+    "measure_battery",
+    "alarm_battery",
+    "alarm_connectivity",
+    "alarm_tank_empty",
+    "alarm_needs_calibration",
+    "alarm_device_error",
+    "measure_gas_level",
+    "measure_gas_remaining",
+    "measure_rssi"
+  ],
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "ble"
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  },
+  "energy": {
+    "batteries": [
+      "AA",
+      "AA"
+    ]
+  },
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ]
+}

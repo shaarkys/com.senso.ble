@@ -1,0 +1,37 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Gas Remaining",
+    "nl": "Resterend gas",
+    "de": "Verbleibendes Gas",
+    "fr": "Gaz restant",
+    "it": "Gas rimanente",
+    "sv": "Aterstaende gas",
+    "no": "Gjenværende gass",
+    "es": "Gas restante",
+    "da": "Resterende gas",
+    "ru": "Ostavshiysya gaz",
+    "pl": "Pozostaly gaz",
+    "ko": "남은 가스"
+  },
+  "units": {
+    "en": "kg",
+    "nl": "kg",
+    "de": "kg",
+    "fr": "kg",
+    "it": "kg",
+    "sv": "kg",
+    "no": "kg",
+    "es": "kg",
+    "da": "kg",
+    "ru": "kg",
+    "pl": "kg",
+    "ko": "kg"
+  },
+  "decimals": 2,
+  "min": 0,
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/capability_gas_tank.svg"
+}

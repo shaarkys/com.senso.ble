@@ -1,1 +1,32 @@
-{}
+{
+  "app": {
+    "name": "Senso4s",
+    "description": "Never run out of gas again."
+  },
+  "settings": {
+    "connection_interval_minutes": {
+      "label": "Connection Interval",
+      "hint": "Minutes between short active BLE connections for direct characteristic reads. Advertisement updates are still used between connections."
+    },
+    "gas_capacity_kg": {
+      "label": "Gas Capacity",
+      "hint": "Cylinder gas capacity used to calculate remaining gas weight from the advertised percentage."
+    },
+    "low_level_threshold": {
+      "label": "Low Gas Threshold",
+      "hint": "Tank empty alarm turns on when gas level is at or below this percentage."
+    }
+  },
+  "capabilities": {
+    "alarm_device_error": "Device Error",
+    "alarm_incline_anomaly": "Incline Anomaly",
+    "alarm_motion": "Motion",
+    "alarm_needs_calibration": "Needs Calibration",
+    "alarm_senso_anomaly": "Anomaly",
+    "alarm_tank_empty": "Tank Empty",
+    "alarm_temperature_anomaly": "Temperature Anomaly",
+    "measure_gas_level": "Gas Level",
+    "measure_gas_remaining": "Gas Remaining",
+    "measure_rssi": "RSSI"
+  }
+}

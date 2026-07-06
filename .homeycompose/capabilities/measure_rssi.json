@@ -1,0 +1,38 @@
+{
+  "type": "number",
+  "title": {
+    "en": "RSSI",
+    "nl": "RSSI",
+    "de": "RSSI",
+    "fr": "RSSI",
+    "it": "RSSI",
+    "sv": "RSSI",
+    "no": "RSSI",
+    "es": "RSSI",
+    "da": "RSSI",
+    "ru": "RSSI",
+    "pl": "RSSI",
+    "ko": "RSSI"
+  },
+  "units": {
+    "en": "dBm",
+    "nl": "dBm",
+    "de": "dBm",
+    "fr": "dBm",
+    "it": "dBm",
+    "sv": "dBm",
+    "no": "dBm",
+    "es": "dBm",
+    "da": "dBm",
+    "ru": "dBm",
+    "pl": "dBm",
+    "ko": "dBm"
+  },
+  "decimals": 0,
+  "min": -100,
+  "max": 0,
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/capability_rssi.svg"
+}

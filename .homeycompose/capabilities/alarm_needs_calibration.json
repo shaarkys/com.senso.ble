@@ -1,0 +1,22 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Needs Calibration",
+    "nl": "Kalibratie nodig",
+    "de": "Kalibrierung erforderlich",
+    "fr": "Calibration requise",
+    "it": "Calibrazione necessaria",
+    "sv": "Kravs kalibrering",
+    "no": "Trenger kalibrering",
+    "es": "Necesita calibracion",
+    "da": "Kraever kalibrering",
+    "ru": "Trebuyetsya kalibrovka",
+    "pl": "Wymaga kalibracji",
+    "ko": "보정 필요"
+  },
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/capability_scale.svg"
+}

@@ -1,0 +1,22 @@
+{
+  "type": "boolean",
+  "title": {
+    "en": "Temperature Anomaly",
+    "nl": "Temperatuurafwijking",
+    "de": "Temperaturanomalie",
+    "fr": "Anomalie de temperature",
+    "it": "Anomalia temperatura",
+    "sv": "Temperaturavvikelse",
+    "no": "Temperaturavvik",
+    "es": "Anomalia de temperatura",
+    "da": "Temperaturanomali",
+    "ru": "Anomaliya temperatury",
+    "pl": "Anomalia temperatury",
+    "ko": "온도 이상"
+  },
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/capability_alert.svg"
+}
