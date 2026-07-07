@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.senso.ble",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "compatibility": ">=12.4.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -51,7 +51,30 @@
     "name": "Bretislav Kubesa",
     "email": "bretislav.kubesa@gmail.com"
   },
+  "contributors": {
+    "developers": [
+      {
+        "name": "Ken Sanislo"
+      }
+    ]
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "bkubesa"
+      }
+    }
+  },
   "brandColor": "#1F7E68",
+  "tags": {
+    "en": [
+      "gas cylinder ble"
+    ]
+  },
+  "source": "https://github.com/shaarkys/com.senso.ble",
+  "bugs": {
+    "url": "https://github.com/shaarkys/com.senso.ble/issues"
+  },
   "flow": {
     "triggers": [
       {
