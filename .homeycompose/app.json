@@ -1,6 +1,6 @@
 {
   "id": "com.senso.ble",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "compatibility": ">=12.4.0",
   "sdk": 3,
   "runtime": "nodejs",
@@ -73,5 +73,6 @@
   "source": "https://github.com/shaarkys/com.senso.ble",
   "bugs": {
     "url": "https://github.com/shaarkys/com.senso.ble/issues"
-  }
+  },
+  "homeyCommunityTopicId": 156994
 }
