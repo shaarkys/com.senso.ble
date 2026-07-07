@@ -10,11 +10,13 @@
  */
 
 export const SERVICE_UUID = '00007081a20b4d4da4de7f071dbbc1d8';
+export const PLUS_SERVICE_UUID = '0000188123b39a14a4ae71a713cb89a8';
 export const SCAN_FILTER_UUID = '0000708100001000800000805f9b34fb';
 export const CHAR_LEVEL_UUID = '00007082a20b4d4da4de7f071dbbc1d8';
 export const CHAR_CONFIG_UUID = '00007083a20b4d4da4de7f071dbbc1d8';
 export const CHAR_HISTORY_UUID = '00007085a20b4d4da4de7f071dbbc1d8';
 export const CHAR_SETUP_DATE_UUID = '00007087a20b4d4da4de7f071dbbc1d8';
+export const PLUS_CHAR_TEMPERATURE_UUID = '0000188223b39a14a4ae71a713cb89a8';
 
 export const MANUFACTURER_IDS = new Set([0x0059, 0x09cc]);
 export const DEVICE_NAME_PREFIX = 'SENSO4S';
@@ -144,11 +146,7 @@ export function parseAdvertisement(advertisement: {
   const macBytes = data.length >= 12 ? data.subarray(6, 12) : Buffer.alloc(6);
   const modelNibble = flagsByte >> 4;
   const isPlusModel = modelNibble < 0x8;
-  let usageMode = usageModeFromValue(flagsByte & 0x0f);
-
-  if (!isPlusModel && usageMode === UsageMode.CARAVANNING) {
-    usageMode = UsageMode.HOUSEHOLD;
-  }
+  const usageMode = usageModeFromValue(flagsByte & 0x0f);
 
   const anomalies: AnomalyType[] = [];
   if (isPlusModel && modelNibble !== 0) {
@@ -250,6 +248,14 @@ export function parseCylinderConfig(data: Buffer): CylinderConfig | null {
     gasCapacityKg: data.readUInt16LE(2) / 100,
     usageMode: usageModeFromValue(data[4]),
   };
+}
+
+export function parsePlusTemperature(data: Buffer): number | null {
+  if (data.length < 1) {
+    return null;
+  }
+
+  return data[0] - 100;
 }
 
 export function parseSetupDate(data: Buffer): Date | null {

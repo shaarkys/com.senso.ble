@@ -11,6 +11,8 @@ import {
   DEFAULT_LOW_LEVEL_THRESHOLD,
   ERROR_DESCRIPTIONS,
   MIN_CONNECTION_INTERVAL_MINUTES,
+  PLUS_CHAR_TEMPERATURE_UUID,
+  PLUS_SERVICE_UUID,
   SCAN_FILTER_UUID,
   SERVICE_UUID,
   USAGE_MODE_NAMES,
@@ -18,6 +20,7 @@ import {
   parseAdvertisement,
   parseCylinderConfig,
   parseHistoryData,
+  parsePlusTemperature,
   parseSetupDate,
 } from '../../lib/senso4s';
 
@@ -37,6 +40,7 @@ const REQUIRED_CAPABILITIES = [
 ];
 
 const PLUS_MODEL_CAPABILITIES = [
+  'measure_temperature',
   'alarm_senso_anomaly',
   'alarm_temperature_anomaly',
   'alarm_incline_anomaly',
@@ -80,6 +84,8 @@ module.exports = class Senso4sDevice extends Homey.Device {
   private lowLevelThreshold = DEFAULT_LOW_LEVEL_THRESHOLD;
   private connectionIntervalMinutes = DEFAULT_CONNECTION_INTERVAL_MINUTES;
   private lastDecodedAdvertisementAt = 0;
+  private lastHandledSubscriptionAdvertisementAt = 0;
+  private lastHandledSubscriptionAdvertisementFingerprint: string | null = null;
 
   async onInit() {
     this.log('Senso4s device initialized', this.getData());
@@ -281,6 +287,10 @@ module.exports = class Senso4sDevice extends Homey.Device {
     advertisement: BleAdvertisementLike,
     source: 'poll' | 'subscription',
   ) {
+    if (source === 'subscription' && !this.shouldHandleSubscriptionAdvertisement(advertisement)) {
+      return;
+    }
+
     const parsed = parseAdvertisement(advertisement);
 
     this.log('Advertisement raw', JSON.stringify({
@@ -374,6 +384,10 @@ module.exports = class Senso4sDevice extends Homey.Device {
         await this.applyLevelInterpretation(level);
       }
 
+      if (this.getStore().isPlusModel === true) {
+        await this.readPlusTemperature(peripheral);
+      }
+
       const setupDate = await peripheral.read(SERVICE_UUID, CHAR_SETUP_DATE_UUID)
         .then((data: Buffer) => {
           const setupDateValue = parseSetupDate(data);
@@ -458,6 +472,24 @@ module.exports = class Senso4sDevice extends Homey.Device {
     });
   }
 
+  private async readPlusTemperature(peripheral: Awaited<ReturnType<Awaited<ReturnType<typeof this.findAdvertisement>>['connect']>>) {
+    await peripheral.read(PLUS_SERVICE_UUID, PLUS_CHAR_TEMPERATURE_UUID)
+      .then(async (data: Buffer) => {
+        const temperature = parsePlusTemperature(data);
+        this.log('Plus temperature characteristic', JSON.stringify({
+          uuid: PLUS_CHAR_TEMPERATURE_UUID,
+          raw: data.toString('hex'),
+          decoded: temperature,
+        }));
+        if (typeof temperature === 'number') {
+          await this.setCapabilityValueIfChanged('measure_temperature', temperature);
+        }
+      })
+      .catch((error: Error) => {
+        this.log('Could not read Senso4s Plus temperature characteristic', error.message);
+      });
+  }
+
   private async readHistory(
     peripheral: Awaited<ReturnType<Awaited<ReturnType<typeof this.findAdvertisement>>['connect']>>,
     setupDate: Date,
@@ -522,10 +554,14 @@ module.exports = class Senso4sDevice extends Homey.Device {
     gasLevelPercent: number | null;
     needsCalibration: boolean;
     hasError: boolean;
+    errorCode?: number | null;
     anomalies: AnomalyType[];
   }) {
     await this.setCapabilityValueIfChanged('alarm_needs_calibration', level.needsCalibration);
     await this.setCapabilityValueIfChanged('alarm_device_error', level.hasError);
+    if (level.errorCode === 0xfe) {
+      await this.setCapabilityValueIfChanged('alarm_battery', true);
+    }
 
     if (this.hasCapability('alarm_senso_anomaly')) {
       await this.setCapabilityValueIfChanged('alarm_senso_anomaly', level.anomalies.length > 0);
@@ -624,6 +660,26 @@ module.exports = class Senso4sDevice extends Homey.Device {
 
   private hasFreshDecodedAdvertisement() {
     return Date.now() - this.lastDecodedAdvertisementAt < this.connectionIntervalMinutes * 60 * 1000;
+  }
+
+  private shouldHandleSubscriptionAdvertisement(advertisement: BleAdvertisementLike) {
+    const now = Date.now();
+    const fingerprint = [
+      advertisement.uuid,
+      advertisement.address,
+      advertisement.manufacturerData?.toString('hex') || '',
+    ].join('|');
+
+    if (
+      fingerprint === this.lastHandledSubscriptionAdvertisementFingerprint
+      && now - this.lastHandledSubscriptionAdvertisementAt < 60 * 1000
+    ) {
+      return false;
+    }
+
+    this.lastHandledSubscriptionAdvertisementFingerprint = fingerprint;
+    this.lastHandledSubscriptionAdvertisementAt = now;
+    return true;
   }
 
   private async setUpdateMethod(method: string) {
