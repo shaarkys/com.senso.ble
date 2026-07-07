@@ -18,5 +18,61 @@
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
-  "icon": "/assets/capability_alert.svg"
+  "icon": "/assets/capability_alert.svg",
+  "titleTrue": {
+    "en": "Error",
+    "nl": "Fout",
+    "de": "Fehler",
+    "fr": "Erreur",
+    "it": "Errore",
+    "sv": "Fel",
+    "no": "Feil",
+    "es": "Error",
+    "da": "Fejl",
+    "ru": "Oshibka",
+    "pl": "Blad",
+    "ko": "오류"
+  },
+  "titleFalse": {
+    "en": "OK",
+    "nl": "OK",
+    "de": "OK",
+    "fr": "OK",
+    "it": "OK",
+    "sv": "OK",
+    "no": "OK",
+    "es": "OK",
+    "da": "OK",
+    "ru": "OK",
+    "pl": "OK",
+    "ko": "정상"
+  },
+  "insightsTitleTrue": {
+    "en": "Device error detected",
+    "nl": "Apparaatfout gedetecteerd",
+    "de": "Geratefehler erkannt",
+    "fr": "Erreur appareil detectee",
+    "it": "Errore dispositivo rilevato",
+    "sv": "Enhetsfel upptackt",
+    "no": "Enhetsfeil oppdaget",
+    "es": "Error del dispositivo detectado",
+    "da": "Enhedsfejl registreret",
+    "ru": "Obnaruzhena oshibka ustroystva",
+    "pl": "Wykryto blad urzadzenia",
+    "ko": "장치 오류 감지됨"
+  },
+  "insightsTitleFalse": {
+    "en": "Device error cleared",
+    "nl": "Apparaatfout hersteld",
+    "de": "Geratefehler behoben",
+    "fr": "Erreur appareil effacee",
+    "it": "Errore dispositivo risolto",
+    "sv": "Enhetsfel rensat",
+    "no": "Enhetsfeil fjernet",
+    "es": "Error del dispositivo resuelto",
+    "da": "Enhedsfejl ryddet",
+    "ru": "Oshibka ustroystva sbroshena",
+    "pl": "Blad urzadzenia usuniety",
+    "ko": "장치 오류 해제됨"
+  }
 }

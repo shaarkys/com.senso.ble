@@ -18,5 +18,61 @@
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
-  "icon": "/assets/capability_alert.svg"
+  "icon": "/assets/capability_alert.svg",
+  "titleTrue": {
+    "en": "Detected",
+    "nl": "Gedetecteerd",
+    "de": "Erkannt",
+    "fr": "Detectee",
+    "it": "Rilevata",
+    "sv": "Upptackt",
+    "no": "Oppdaget",
+    "es": "Detectada",
+    "da": "Registreret",
+    "ru": "Obnaruzhena",
+    "pl": "Wykryta",
+    "ko": "감지됨"
+  },
+  "titleFalse": {
+    "en": "Clear",
+    "nl": "Vrij",
+    "de": "Frei",
+    "fr": "Normale",
+    "it": "Normale",
+    "sv": "Normal",
+    "no": "Normal",
+    "es": "Normal",
+    "da": "Normal",
+    "ru": "Normalno",
+    "pl": "Normalnie",
+    "ko": "정상"
+  },
+  "insightsTitleTrue": {
+    "en": "Anomaly detected",
+    "nl": "Afwijking gedetecteerd",
+    "de": "Anomalie erkannt",
+    "fr": "Anomalie detectee",
+    "it": "Anomalia rilevata",
+    "sv": "Avvikelse upptackt",
+    "no": "Avvik oppdaget",
+    "es": "Anomalia detectada",
+    "da": "Anomali registreret",
+    "ru": "Obnaruzhena anomaliya",
+    "pl": "Wykryto anomalie",
+    "ko": "이상 감지됨"
+  },
+  "insightsTitleFalse": {
+    "en": "Anomaly cleared",
+    "nl": "Afwijking hersteld",
+    "de": "Anomalie behoben",
+    "fr": "Anomalie effacee",
+    "it": "Anomalia risolta",
+    "sv": "Avvikelse rensad",
+    "no": "Avvik fjernet",
+    "es": "Anomalia resuelta",
+    "da": "Anomali ryddet",
+    "ru": "Anomaliya sbroshena",
+    "pl": "Anomalia usunieta",
+    "ko": "이상 해제됨"
+  }
 }

@@ -18,5 +18,61 @@
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
-  "icon": "/assets/capability_alert.svg"
+  "icon": "/assets/capability_alert.svg",
+  "titleTrue": {
+    "en": "Detected",
+    "nl": "Gedetecteerd",
+    "de": "Erkannt",
+    "fr": "Detecte",
+    "it": "Rilevato",
+    "sv": "Upptackt",
+    "no": "Oppdaget",
+    "es": "Detectado",
+    "da": "Registreret",
+    "ru": "Obnaruzheno",
+    "pl": "Wykryto",
+    "ko": "감지됨"
+  },
+  "titleFalse": {
+    "en": "Clear",
+    "nl": "Vrij",
+    "de": "Frei",
+    "fr": "Normal",
+    "it": "Normale",
+    "sv": "Normal",
+    "no": "Normal",
+    "es": "Normal",
+    "da": "Normal",
+    "ru": "Normalno",
+    "pl": "Normalnie",
+    "ko": "정상"
+  },
+  "insightsTitleTrue": {
+    "en": "Motion detected",
+    "nl": "Beweging gedetecteerd",
+    "de": "Bewegung erkannt",
+    "fr": "Mouvement detecte",
+    "it": "Movimento rilevato",
+    "sv": "Rorelse upptackt",
+    "no": "Bevegelse oppdaget",
+    "es": "Movimiento detectado",
+    "da": "Bevaegelse registreret",
+    "ru": "Obnaruzheno dvizhenie",
+    "pl": "Wykryto ruch",
+    "ko": "움직임 감지됨"
+  },
+  "insightsTitleFalse": {
+    "en": "Motion cleared",
+    "nl": "Beweging gestopt",
+    "de": "Bewegung beendet",
+    "fr": "Mouvement termine",
+    "it": "Movimento terminato",
+    "sv": "Rorelse avslutad",
+    "no": "Bevegelse avsluttet",
+    "es": "Movimiento finalizado",
+    "da": "Bevaegelse afsluttet",
+    "ru": "Dvizhenie prekratilos",
+    "pl": "Ruch zakonczony",
+    "ko": "움직임 해제됨"
+  }
 }

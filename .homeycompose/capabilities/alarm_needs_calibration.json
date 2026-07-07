@@ -18,5 +18,61 @@
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
-  "icon": "/assets/capability_scale.svg"
+  "icon": "/assets/capability_scale.svg",
+  "titleTrue": {
+    "en": "Needed",
+    "nl": "Nodig",
+    "de": "Notig",
+    "fr": "Requise",
+    "it": "Necessaria",
+    "sv": "Kravs",
+    "no": "Trengs",
+    "es": "Necesaria",
+    "da": "Kraeves",
+    "ru": "Nuzhna",
+    "pl": "Wymagana",
+    "ko": "필요"
+  },
+  "titleFalse": {
+    "en": "OK",
+    "nl": "OK",
+    "de": "OK",
+    "fr": "OK",
+    "it": "OK",
+    "sv": "OK",
+    "no": "OK",
+    "es": "OK",
+    "da": "OK",
+    "ru": "OK",
+    "pl": "OK",
+    "ko": "정상"
+  },
+  "insightsTitleTrue": {
+    "en": "Calibration needed",
+    "nl": "Kalibratie nodig",
+    "de": "Kalibrierung erforderlich",
+    "fr": "Calibration requise",
+    "it": "Calibrazione necessaria",
+    "sv": "Kalibrering kravs",
+    "no": "Kalibrering trengs",
+    "es": "Calibracion necesaria",
+    "da": "Kalibrering kraeves",
+    "ru": "Trebuyetsya kalibrovka",
+    "pl": "Wymaga kalibracji",
+    "ko": "보정 필요"
+  },
+  "insightsTitleFalse": {
+    "en": "Calibration OK",
+    "nl": "Kalibratie OK",
+    "de": "Kalibrierung OK",
+    "fr": "Calibration OK",
+    "it": "Calibrazione OK",
+    "sv": "Kalibrering OK",
+    "no": "Kalibrering OK",
+    "es": "Calibracion OK",
+    "da": "Kalibrering OK",
+    "ru": "Kalibrovka OK",
+    "pl": "Kalibracja OK",
+    "ko": "보정 정상"
+  }
 }

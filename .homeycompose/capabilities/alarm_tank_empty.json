@@ -18,5 +18,61 @@
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
-  "icon": "/assets/capability_gas_tank.svg"
+  "icon": "/assets/capability_gas_tank.svg",
+  "titleTrue": {
+    "en": "Empty",
+    "nl": "Leeg",
+    "de": "Leer",
+    "fr": "Vide",
+    "it": "Vuota",
+    "sv": "Tom",
+    "no": "Tom",
+    "es": "Vacia",
+    "da": "Tom",
+    "ru": "Pusto",
+    "pl": "Pusty",
+    "ko": "비어 있음"
+  },
+  "titleFalse": {
+    "en": "Not empty",
+    "nl": "Niet leeg",
+    "de": "Nicht leer",
+    "fr": "Non vide",
+    "it": "Non vuota",
+    "sv": "Inte tom",
+    "no": "Ikke tom",
+    "es": "No vacia",
+    "da": "Ikke tom",
+    "ru": "Ne pusto",
+    "pl": "Nie pusty",
+    "ko": "비어 있지 않음"
+  },
+  "insightsTitleTrue": {
+    "en": "Tank empty",
+    "nl": "Tank leeg",
+    "de": "Tank leer",
+    "fr": "Reservoir vide",
+    "it": "Serbatoio vuoto",
+    "sv": "Tank tom",
+    "no": "Tank tom",
+    "es": "Deposito vacio",
+    "da": "Tank tom",
+    "ru": "Ballon pust",
+    "pl": "Butla pusta",
+    "ko": "탱크 비어 있음"
+  },
+  "insightsTitleFalse": {
+    "en": "Tank not empty",
+    "nl": "Tank niet leeg",
+    "de": "Tank nicht leer",
+    "fr": "Reservoir non vide",
+    "it": "Serbatoio non vuoto",
+    "sv": "Tank inte tom",
+    "no": "Tank ikke tom",
+    "es": "Deposito no vacio",
+    "da": "Tank ikke tom",
+    "ru": "Ballon ne pust",
+    "pl": "Butla nie jest pusta",
+    "ko": "탱크 비어 있지 않음"
+  }
 }

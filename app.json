@@ -52,6 +52,101 @@
     "email": "bretislav.kubesa@gmail.com"
   },
   "brandColor": "#1F7E68",
+  "flow": {
+    "triggers": [
+      {
+        "id": "tank_empty",
+        "title": {
+          "en": "Tank became empty"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=senso4s"
+          }
+        ]
+      },
+      {
+        "id": "needs_calibration",
+        "title": {
+          "en": "Calibration is needed"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=senso4s"
+          }
+        ]
+      },
+      {
+        "id": "device_error",
+        "title": {
+          "en": "Device error detected"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=senso4s"
+          }
+        ]
+      },
+      {
+        "id": "senso_anomaly",
+        "title": {
+          "en": "Anomaly detected"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=senso4s"
+          }
+        ]
+      },
+      {
+        "id": "temperature_anomaly",
+        "title": {
+          "en": "Temperature anomaly detected"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=senso4s"
+          }
+        ]
+      },
+      {
+        "id": "incline_anomaly",
+        "title": {
+          "en": "Incline anomaly detected"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=senso4s"
+          }
+        ]
+      },
+      {
+        "id": "motion_detected",
+        "title": {
+          "en": "Motion detected"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=senso4s"
+          }
+        ]
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {
@@ -78,7 +173,10 @@
         "alarm_device_error",
         "measure_gas_level",
         "measure_gas_remaining",
-        "measure_rssi"
+        "measure_gas_level_delta",
+        "measure_gas_level_delta_hour",
+        "measure_rssi",
+        "meter_update_method"
       ],
       "platforms": [
         "local"
@@ -283,7 +381,63 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/capability_alert.svg"
+      "icon": "/assets/capability_alert.svg",
+      "titleTrue": {
+        "en": "Error",
+        "nl": "Fout",
+        "de": "Fehler",
+        "fr": "Erreur",
+        "it": "Errore",
+        "sv": "Fel",
+        "no": "Feil",
+        "es": "Error",
+        "da": "Fejl",
+        "ru": "Oshibka",
+        "pl": "Blad",
+        "ko": "오류"
+      },
+      "titleFalse": {
+        "en": "OK",
+        "nl": "OK",
+        "de": "OK",
+        "fr": "OK",
+        "it": "OK",
+        "sv": "OK",
+        "no": "OK",
+        "es": "OK",
+        "da": "OK",
+        "ru": "OK",
+        "pl": "OK",
+        "ko": "정상"
+      },
+      "insightsTitleTrue": {
+        "en": "Device error detected",
+        "nl": "Apparaatfout gedetecteerd",
+        "de": "Geratefehler erkannt",
+        "fr": "Erreur appareil detectee",
+        "it": "Errore dispositivo rilevato",
+        "sv": "Enhetsfel upptackt",
+        "no": "Enhetsfeil oppdaget",
+        "es": "Error del dispositivo detectado",
+        "da": "Enhedsfejl registreret",
+        "ru": "Obnaruzhena oshibka ustroystva",
+        "pl": "Wykryto blad urzadzenia",
+        "ko": "장치 오류 감지됨"
+      },
+      "insightsTitleFalse": {
+        "en": "Device error cleared",
+        "nl": "Apparaatfout hersteld",
+        "de": "Geratefehler behoben",
+        "fr": "Erreur appareil effacee",
+        "it": "Errore dispositivo risolto",
+        "sv": "Enhetsfel rensat",
+        "no": "Enhetsfeil fjernet",
+        "es": "Error del dispositivo resuelto",
+        "da": "Enhedsfejl ryddet",
+        "ru": "Oshibka ustroystva sbroshena",
+        "pl": "Blad urzadzenia usuniety",
+        "ko": "장치 오류 해제됨"
+      }
     },
     "alarm_incline_anomaly": {
       "type": "boolean",
@@ -305,7 +459,63 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/capability_alert.svg"
+      "icon": "/assets/capability_alert.svg",
+      "titleTrue": {
+        "en": "Detected",
+        "nl": "Gedetecteerd",
+        "de": "Erkannt",
+        "fr": "Detectee",
+        "it": "Rilevata",
+        "sv": "Upptackt",
+        "no": "Oppdaget",
+        "es": "Detectada",
+        "da": "Registreret",
+        "ru": "Obnaruzhena",
+        "pl": "Wykryta",
+        "ko": "감지됨"
+      },
+      "titleFalse": {
+        "en": "Clear",
+        "nl": "Vrij",
+        "de": "Frei",
+        "fr": "Normale",
+        "it": "Normale",
+        "sv": "Normal",
+        "no": "Normal",
+        "es": "Normal",
+        "da": "Normal",
+        "ru": "Normalno",
+        "pl": "Normalnie",
+        "ko": "정상"
+      },
+      "insightsTitleTrue": {
+        "en": "Incline anomaly detected",
+        "nl": "Hellingafwijking gedetecteerd",
+        "de": "Neigungsanomalie erkannt",
+        "fr": "Anomalie d inclinaison detectee",
+        "it": "Anomalia inclinazione rilevata",
+        "sv": "Lutningsavvikelse upptackt",
+        "no": "Helningsavvik oppdaget",
+        "es": "Anomalia de inclinacion detectada",
+        "da": "Haeldningsanomali registreret",
+        "ru": "Obnaruzhena anomaliya naklona",
+        "pl": "Wykryto anomalie nachylenia",
+        "ko": "기울기 이상 감지됨"
+      },
+      "insightsTitleFalse": {
+        "en": "Incline anomaly cleared",
+        "nl": "Hellingafwijking hersteld",
+        "de": "Neigungsanomalie behoben",
+        "fr": "Anomalie d inclinaison effacee",
+        "it": "Anomalia inclinazione risolta",
+        "sv": "Lutningsavvikelse rensad",
+        "no": "Helningsavvik fjernet",
+        "es": "Anomalia de inclinacion resuelta",
+        "da": "Haeldningsanomali ryddet",
+        "ru": "Anomaliya naklona sbroshena",
+        "pl": "Anomalia nachylenia usunieta",
+        "ko": "기울기 이상 해제됨"
+      }
     },
     "alarm_motion": {
       "type": "boolean",
@@ -327,7 +537,63 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/capability_alert.svg"
+      "icon": "/assets/capability_alert.svg",
+      "titleTrue": {
+        "en": "Detected",
+        "nl": "Gedetecteerd",
+        "de": "Erkannt",
+        "fr": "Detecte",
+        "it": "Rilevato",
+        "sv": "Upptackt",
+        "no": "Oppdaget",
+        "es": "Detectado",
+        "da": "Registreret",
+        "ru": "Obnaruzheno",
+        "pl": "Wykryto",
+        "ko": "감지됨"
+      },
+      "titleFalse": {
+        "en": "Clear",
+        "nl": "Vrij",
+        "de": "Frei",
+        "fr": "Normal",
+        "it": "Normale",
+        "sv": "Normal",
+        "no": "Normal",
+        "es": "Normal",
+        "da": "Normal",
+        "ru": "Normalno",
+        "pl": "Normalnie",
+        "ko": "정상"
+      },
+      "insightsTitleTrue": {
+        "en": "Motion detected",
+        "nl": "Beweging gedetecteerd",
+        "de": "Bewegung erkannt",
+        "fr": "Mouvement detecte",
+        "it": "Movimento rilevato",
+        "sv": "Rorelse upptackt",
+        "no": "Bevegelse oppdaget",
+        "es": "Movimiento detectado",
+        "da": "Bevaegelse registreret",
+        "ru": "Obnaruzheno dvizhenie",
+        "pl": "Wykryto ruch",
+        "ko": "움직임 감지됨"
+      },
+      "insightsTitleFalse": {
+        "en": "Motion cleared",
+        "nl": "Beweging gestopt",
+        "de": "Bewegung beendet",
+        "fr": "Mouvement termine",
+        "it": "Movimento terminato",
+        "sv": "Rorelse avslutad",
+        "no": "Bevegelse avsluttet",
+        "es": "Movimiento finalizado",
+        "da": "Bevaegelse afsluttet",
+        "ru": "Dvizhenie prekratilos",
+        "pl": "Ruch zakonczony",
+        "ko": "움직임 해제됨"
+      }
     },
     "alarm_needs_calibration": {
       "type": "boolean",
@@ -349,7 +615,63 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/capability_scale.svg"
+      "icon": "/assets/capability_scale.svg",
+      "titleTrue": {
+        "en": "Needed",
+        "nl": "Nodig",
+        "de": "Notig",
+        "fr": "Requise",
+        "it": "Necessaria",
+        "sv": "Kravs",
+        "no": "Trengs",
+        "es": "Necesaria",
+        "da": "Kraeves",
+        "ru": "Nuzhna",
+        "pl": "Wymagana",
+        "ko": "필요"
+      },
+      "titleFalse": {
+        "en": "OK",
+        "nl": "OK",
+        "de": "OK",
+        "fr": "OK",
+        "it": "OK",
+        "sv": "OK",
+        "no": "OK",
+        "es": "OK",
+        "da": "OK",
+        "ru": "OK",
+        "pl": "OK",
+        "ko": "정상"
+      },
+      "insightsTitleTrue": {
+        "en": "Calibration needed",
+        "nl": "Kalibratie nodig",
+        "de": "Kalibrierung erforderlich",
+        "fr": "Calibration requise",
+        "it": "Calibrazione necessaria",
+        "sv": "Kalibrering kravs",
+        "no": "Kalibrering trengs",
+        "es": "Calibracion necesaria",
+        "da": "Kalibrering kraeves",
+        "ru": "Trebuyetsya kalibrovka",
+        "pl": "Wymaga kalibracji",
+        "ko": "보정 필요"
+      },
+      "insightsTitleFalse": {
+        "en": "Calibration OK",
+        "nl": "Kalibratie OK",
+        "de": "Kalibrierung OK",
+        "fr": "Calibration OK",
+        "it": "Calibrazione OK",
+        "sv": "Kalibrering OK",
+        "no": "Kalibrering OK",
+        "es": "Calibracion OK",
+        "da": "Kalibrering OK",
+        "ru": "Kalibrovka OK",
+        "pl": "Kalibracja OK",
+        "ko": "보정 정상"
+      }
     },
     "alarm_senso_anomaly": {
       "type": "boolean",
@@ -371,7 +693,63 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/capability_alert.svg"
+      "icon": "/assets/capability_alert.svg",
+      "titleTrue": {
+        "en": "Detected",
+        "nl": "Gedetecteerd",
+        "de": "Erkannt",
+        "fr": "Detectee",
+        "it": "Rilevata",
+        "sv": "Upptackt",
+        "no": "Oppdaget",
+        "es": "Detectada",
+        "da": "Registreret",
+        "ru": "Obnaruzhena",
+        "pl": "Wykryta",
+        "ko": "감지됨"
+      },
+      "titleFalse": {
+        "en": "Clear",
+        "nl": "Vrij",
+        "de": "Frei",
+        "fr": "Normale",
+        "it": "Normale",
+        "sv": "Normal",
+        "no": "Normal",
+        "es": "Normal",
+        "da": "Normal",
+        "ru": "Normalno",
+        "pl": "Normalnie",
+        "ko": "정상"
+      },
+      "insightsTitleTrue": {
+        "en": "Anomaly detected",
+        "nl": "Afwijking gedetecteerd",
+        "de": "Anomalie erkannt",
+        "fr": "Anomalie detectee",
+        "it": "Anomalia rilevata",
+        "sv": "Avvikelse upptackt",
+        "no": "Avvik oppdaget",
+        "es": "Anomalia detectada",
+        "da": "Anomali registreret",
+        "ru": "Obnaruzhena anomaliya",
+        "pl": "Wykryto anomalie",
+        "ko": "이상 감지됨"
+      },
+      "insightsTitleFalse": {
+        "en": "Anomaly cleared",
+        "nl": "Afwijking hersteld",
+        "de": "Anomalie behoben",
+        "fr": "Anomalie effacee",
+        "it": "Anomalia risolta",
+        "sv": "Avvikelse rensad",
+        "no": "Avvik fjernet",
+        "es": "Anomalia resuelta",
+        "da": "Anomali ryddet",
+        "ru": "Anomaliya sbroshena",
+        "pl": "Anomalia usunieta",
+        "ko": "이상 해제됨"
+      }
     },
     "alarm_tank_empty": {
       "type": "boolean",
@@ -393,7 +771,63 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/capability_gas_tank.svg"
+      "icon": "/assets/capability_gas_tank.svg",
+      "titleTrue": {
+        "en": "Empty",
+        "nl": "Leeg",
+        "de": "Leer",
+        "fr": "Vide",
+        "it": "Vuota",
+        "sv": "Tom",
+        "no": "Tom",
+        "es": "Vacia",
+        "da": "Tom",
+        "ru": "Pusto",
+        "pl": "Pusty",
+        "ko": "비어 있음"
+      },
+      "titleFalse": {
+        "en": "Not empty",
+        "nl": "Niet leeg",
+        "de": "Nicht leer",
+        "fr": "Non vide",
+        "it": "Non vuota",
+        "sv": "Inte tom",
+        "no": "Ikke tom",
+        "es": "No vacia",
+        "da": "Ikke tom",
+        "ru": "Ne pusto",
+        "pl": "Nie pusty",
+        "ko": "비어 있지 않음"
+      },
+      "insightsTitleTrue": {
+        "en": "Tank empty",
+        "nl": "Tank leeg",
+        "de": "Tank leer",
+        "fr": "Reservoir vide",
+        "it": "Serbatoio vuoto",
+        "sv": "Tank tom",
+        "no": "Tank tom",
+        "es": "Deposito vacio",
+        "da": "Tank tom",
+        "ru": "Ballon pust",
+        "pl": "Butla pusta",
+        "ko": "탱크 비어 있음"
+      },
+      "insightsTitleFalse": {
+        "en": "Tank not empty",
+        "nl": "Tank niet leeg",
+        "de": "Tank nicht leer",
+        "fr": "Reservoir non vide",
+        "it": "Serbatoio non vuoto",
+        "sv": "Tank inte tom",
+        "no": "Tank ikke tom",
+        "es": "Deposito no vacio",
+        "da": "Tank ikke tom",
+        "ru": "Ballon ne pust",
+        "pl": "Butla nie jest pusta",
+        "ko": "탱크 비어 있지 않음"
+      }
     },
     "alarm_temperature_anomaly": {
       "type": "boolean",
@@ -415,7 +849,63 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/capability_alert.svg"
+      "icon": "/assets/capability_alert.svg",
+      "titleTrue": {
+        "en": "Detected",
+        "nl": "Gedetecteerd",
+        "de": "Erkannt",
+        "fr": "Detectee",
+        "it": "Rilevata",
+        "sv": "Upptackt",
+        "no": "Oppdaget",
+        "es": "Detectada",
+        "da": "Registreret",
+        "ru": "Obnaruzhena",
+        "pl": "Wykryta",
+        "ko": "감지됨"
+      },
+      "titleFalse": {
+        "en": "Clear",
+        "nl": "Vrij",
+        "de": "Frei",
+        "fr": "Normale",
+        "it": "Normale",
+        "sv": "Normal",
+        "no": "Normal",
+        "es": "Normal",
+        "da": "Normal",
+        "ru": "Normalno",
+        "pl": "Normalnie",
+        "ko": "정상"
+      },
+      "insightsTitleTrue": {
+        "en": "Temperature anomaly detected",
+        "nl": "Temperatuurafwijking gedetecteerd",
+        "de": "Temperaturanomalie erkannt",
+        "fr": "Anomalie de temperature detectee",
+        "it": "Anomalia temperatura rilevata",
+        "sv": "Temperaturavvikelse upptackt",
+        "no": "Temperaturavvik oppdaget",
+        "es": "Anomalia de temperatura detectada",
+        "da": "Temperaturanomali registreret",
+        "ru": "Obnaruzhena anomaliya temperatury",
+        "pl": "Wykryto anomalie temperatury",
+        "ko": "온도 이상 감지됨"
+      },
+      "insightsTitleFalse": {
+        "en": "Temperature anomaly cleared",
+        "nl": "Temperatuurafwijking hersteld",
+        "de": "Temperaturanomalie behoben",
+        "fr": "Anomalie de temperature effacee",
+        "it": "Anomalia temperatura risolta",
+        "sv": "Temperaturavvikelse rensad",
+        "no": "Temperaturavvik fjernet",
+        "es": "Anomalia de temperatura resuelta",
+        "da": "Temperaturanomali ryddet",
+        "ru": "Anomaliya temperatury sbroshena",
+        "pl": "Anomalia temperatury usunieta",
+        "ko": "온도 이상 해제됨"
+      }
     },
     "measure_gas_level": {
       "type": "number",
@@ -454,6 +944,82 @@
       "getable": true,
       "setable": false,
       "icon": "/assets/capability_gas_tank.svg"
+    },
+    "measure_gas_level_delta": {
+      "type": "number",
+      "title": {
+        "en": "Gas Level Change",
+        "nl": "Gasniveau verandering",
+        "de": "Gasstand Anderung",
+        "fr": "Variation du niveau de gaz",
+        "it": "Variazione livello gas",
+        "sv": "Forandring av gasniva",
+        "no": "Endring i gassniva",
+        "es": "Cambio del nivel de gas",
+        "da": "AEndring i gasniveau",
+        "ru": "Izmenenie urovnya gaza",
+        "pl": "Zmiana poziomu gazu",
+        "ko": "가스 수준 변화"
+      },
+      "units": {
+        "en": "%",
+        "nl": "%",
+        "de": "%",
+        "fr": "%",
+        "it": "%",
+        "sv": "%",
+        "no": "%",
+        "es": "%",
+        "da": "%",
+        "ru": "%",
+        "pl": "%",
+        "ko": "%"
+      },
+      "decimals": 0,
+      "min": -100,
+      "max": 100,
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/capability_gas_delta.svg"
+    },
+    "measure_gas_level_delta_hour": {
+      "type": "number",
+      "title": {
+        "en": "Gas Change Rate",
+        "nl": "Gasverbruik tempo",
+        "de": "Gas Anderungsrate",
+        "fr": "Taux de variation du gaz",
+        "it": "Velocita variazione gas",
+        "sv": "Gasforandring per timme",
+        "no": "Gassendring per time",
+        "es": "Tasa de cambio de gas",
+        "da": "Gasændring pr. time",
+        "ru": "Skorost izmeneniya gaza",
+        "pl": "Tempo zmiany gazu",
+        "ko": "가스 변화율"
+      },
+      "units": {
+        "en": "%/h",
+        "nl": "%/u",
+        "de": "%/h",
+        "fr": "%/h",
+        "it": "%/h",
+        "sv": "%/h",
+        "no": "%/t",
+        "es": "%/h",
+        "da": "%/t",
+        "ru": "%/ch",
+        "pl": "%/h",
+        "ko": "%/h"
+      },
+      "decimals": 2,
+      "min": -1000,
+      "max": 1000,
+      "insights": true,
+      "getable": true,
+      "setable": false,
+      "icon": "/assets/capability_gas_delta.svg"
     },
     "measure_gas_remaining": {
       "type": "number",
@@ -529,6 +1095,27 @@
       "getable": true,
       "setable": false,
       "icon": "/assets/capability_rssi.svg"
+    },
+    "meter_update_method": {
+      "type": "string",
+      "title": {
+        "en": "Update Method",
+        "nl": "Updatemethode",
+        "de": "Aktualisierungsmethode",
+        "fr": "Methode de mise a jour",
+        "it": "Metodo di aggiornamento",
+        "sv": "Uppdateringsmetod",
+        "no": "Oppdateringsmetode",
+        "es": "Metodo de actualizacion",
+        "da": "Opdateringsmetode",
+        "ru": "Metod obnovleniya",
+        "pl": "Metoda aktualizacji",
+        "ko": "업데이트 방식"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/capability_update_method.svg"
     }
   }
 }

@@ -1,0 +1,46 @@
+{
+  "triggers": [
+    {
+      "id": "tank_empty",
+      "title": {
+        "en": "Tank became empty"
+      }
+    },
+    {
+      "id": "needs_calibration",
+      "title": {
+        "en": "Calibration is needed"
+      }
+    },
+    {
+      "id": "device_error",
+      "title": {
+        "en": "Device error detected"
+      }
+    },
+    {
+      "id": "senso_anomaly",
+      "title": {
+        "en": "Anomaly detected"
+      }
+    },
+    {
+      "id": "temperature_anomaly",
+      "title": {
+        "en": "Temperature anomaly detected"
+      }
+    },
+    {
+      "id": "incline_anomaly",
+      "title": {
+        "en": "Incline anomaly detected"
+      }
+    },
+    {
+      "id": "motion_detected",
+      "title": {
+        "en": "Motion detected"
+      }
+    }
+  ]
+}

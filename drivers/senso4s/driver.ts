@@ -21,15 +21,42 @@ module.exports = class Senso4sDriver extends Homey.Driver {
     const advertisements = await this.homey.ble.discover([]);
     this.log(`BLE scan returned ${advertisements.length} advertisement(s)`);
 
-    return advertisements
-      .filter(isSenso4sAdvertisement)
-      .map((advertisement) => {
+    const devices = new Map<string, {
+      name: string;
+      data: { id: string };
+      settings: {
+        connection_interval_minutes: number;
+        gas_capacity_kg: number;
+        low_level_threshold: number;
+      };
+      store: {
+        peripheralUuid: string;
+        address: string;
+        manufacturerId: number;
+        macAddress: string;
+        isPlusModel: boolean;
+        usageMode: string;
+      };
+      rssi: number;
+    }>();
+
+    for (const advertisement of advertisements.filter(isSenso4sAdvertisement)) {
         const parsed = parseAdvertisement(advertisement);
+        if (!parsed) {
+          this.log('Skipping Senso4s advertisement without manufacturer data during pairing', JSON.stringify({
+            uuid: advertisement.uuid,
+            address: advertisement.address,
+            localName: advertisement.localName,
+            rssi: advertisement.rssi,
+            serviceUuids: advertisement.serviceUuids,
+          }));
+          continue;
+        }
+
         const address = (advertisement.address || parsed?.macAddress || advertisement.uuid).toUpperCase();
-        const nameParts = [
-          parsed?.name || advertisement.localName || 'Senso4s',
-          parsed ? `(${parsed.isPlusModel ? 'Plus' : 'Basic'})` : null,
-        ].filter(Boolean);
+        const name = parsed
+          ? `Senso4s ${parsed.isPlusModel ? 'Plus' : 'Basic'} (${address})`
+          : `Senso4s (${address})`;
 
         this.log(
           'Senso4s advertisement',
@@ -44,8 +71,8 @@ module.exports = class Senso4sDriver extends Homey.Driver {
           }),
         );
 
-        return {
-          name: nameParts.join(' '),
+        const device = {
+          name,
           data: {
             id: address,
           },
@@ -57,13 +84,21 @@ module.exports = class Senso4sDriver extends Homey.Driver {
           store: {
             peripheralUuid: advertisement.uuid,
             address,
-            manufacturerId: parsed?.manufacturerId,
-            macAddress: parsed?.macAddress,
-            isPlusModel: parsed?.isPlusModel,
-            usageMode: parsed ? USAGE_MODE_NAMES[parsed.usageMode] : undefined,
+            manufacturerId: parsed.manufacturerId,
+            macAddress: parsed.macAddress,
+            isPlusModel: parsed.isPlusModel,
+            usageMode: USAGE_MODE_NAMES[parsed.usageMode],
           },
+          rssi: advertisement.rssi,
         };
-      });
+
+        const existing = devices.get(address);
+        if (!existing || advertisement.rssi > existing.rssi) {
+          devices.set(address, device);
+        }
+    }
+
+    return Array.from(devices.values()).map(({ rssi, ...device }) => device);
   }
 
 };

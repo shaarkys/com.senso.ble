@@ -1,0 +1,38 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Gas Level Change",
+    "nl": "Gasniveau verandering",
+    "de": "Gasstand Anderung",
+    "fr": "Variation du niveau de gaz",
+    "it": "Variazione livello gas",
+    "sv": "Forandring av gasniva",
+    "no": "Endring i gassniva",
+    "es": "Cambio del nivel de gas",
+    "da": "AEndring i gasniveau",
+    "ru": "Izmenenie urovnya gaza",
+    "pl": "Zmiana poziomu gazu",
+    "ko": "가스 수준 변화"
+  },
+  "units": {
+    "en": "%",
+    "nl": "%",
+    "de": "%",
+    "fr": "%",
+    "it": "%",
+    "sv": "%",
+    "no": "%",
+    "es": "%",
+    "da": "%",
+    "ru": "%",
+    "pl": "%",
+    "ko": "%"
+  },
+  "decimals": 0,
+  "min": -100,
+  "max": 100,
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/capability_gas_delta.svg"
+}

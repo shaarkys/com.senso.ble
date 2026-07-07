@@ -18,5 +18,61 @@
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
-  "icon": "/assets/capability_alert.svg"
+  "icon": "/assets/capability_alert.svg",
+  "titleTrue": {
+    "en": "Detected",
+    "nl": "Gedetecteerd",
+    "de": "Erkannt",
+    "fr": "Detectee",
+    "it": "Rilevata",
+    "sv": "Upptackt",
+    "no": "Oppdaget",
+    "es": "Detectada",
+    "da": "Registreret",
+    "ru": "Obnaruzhena",
+    "pl": "Wykryta",
+    "ko": "감지됨"
+  },
+  "titleFalse": {
+    "en": "Clear",
+    "nl": "Vrij",
+    "de": "Frei",
+    "fr": "Normale",
+    "it": "Normale",
+    "sv": "Normal",
+    "no": "Normal",
+    "es": "Normal",
+    "da": "Normal",
+    "ru": "Normalno",
+    "pl": "Normalnie",
+    "ko": "정상"
+  },
+  "insightsTitleTrue": {
+    "en": "Temperature anomaly detected",
+    "nl": "Temperatuurafwijking gedetecteerd",
+    "de": "Temperaturanomalie erkannt",
+    "fr": "Anomalie de temperature detectee",
+    "it": "Anomalia temperatura rilevata",
+    "sv": "Temperaturavvikelse upptackt",
+    "no": "Temperaturavvik oppdaget",
+    "es": "Anomalia de temperatura detectada",
+    "da": "Temperaturanomali registreret",
+    "ru": "Obnaruzhena anomaliya temperatury",
+    "pl": "Wykryto anomalie temperatury",
+    "ko": "온도 이상 감지됨"
+  },
+  "insightsTitleFalse": {
+    "en": "Temperature anomaly cleared",
+    "nl": "Temperatuurafwijking hersteld",
+    "de": "Temperaturanomalie behoben",
+    "fr": "Anomalie de temperature effacee",
+    "it": "Anomalia temperatura risolta",
+    "sv": "Temperaturavvikelse rensad",
+    "no": "Temperaturavvik fjernet",
+    "es": "Anomalia de temperatura resuelta",
+    "da": "Temperaturanomali ryddet",
+    "ru": "Anomaliya temperatury sbroshena",
+    "pl": "Anomalia temperatury usunieta",
+    "ko": "온도 이상 해제됨"
+  }
 }

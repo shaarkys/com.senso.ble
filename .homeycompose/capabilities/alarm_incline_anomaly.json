@@ -18,5 +18,61 @@
   "getable": true,
   "setable": false,
   "uiComponent": "sensor",
-  "icon": "/assets/capability_alert.svg"
+  "icon": "/assets/capability_alert.svg",
+  "titleTrue": {
+    "en": "Detected",
+    "nl": "Gedetecteerd",
+    "de": "Erkannt",
+    "fr": "Detectee",
+    "it": "Rilevata",
+    "sv": "Upptackt",
+    "no": "Oppdaget",
+    "es": "Detectada",
+    "da": "Registreret",
+    "ru": "Obnaruzhena",
+    "pl": "Wykryta",
+    "ko": "감지됨"
+  },
+  "titleFalse": {
+    "en": "Clear",
+    "nl": "Vrij",
+    "de": "Frei",
+    "fr": "Normale",
+    "it": "Normale",
+    "sv": "Normal",
+    "no": "Normal",
+    "es": "Normal",
+    "da": "Normal",
+    "ru": "Normalno",
+    "pl": "Normalnie",
+    "ko": "정상"
+  },
+  "insightsTitleTrue": {
+    "en": "Incline anomaly detected",
+    "nl": "Hellingafwijking gedetecteerd",
+    "de": "Neigungsanomalie erkannt",
+    "fr": "Anomalie d inclinaison detectee",
+    "it": "Anomalia inclinazione rilevata",
+    "sv": "Lutningsavvikelse upptackt",
+    "no": "Helningsavvik oppdaget",
+    "es": "Anomalia de inclinacion detectada",
+    "da": "Haeldningsanomali registreret",
+    "ru": "Obnaruzhena anomaliya naklona",
+    "pl": "Wykryto anomalie nachylenia",
+    "ko": "기울기 이상 감지됨"
+  },
+  "insightsTitleFalse": {
+    "en": "Incline anomaly cleared",
+    "nl": "Hellingafwijking hersteld",
+    "de": "Neigungsanomalie behoben",
+    "fr": "Anomalie d inclinaison effacee",
+    "it": "Anomalia inclinazione risolta",
+    "sv": "Lutningsavvikelse rensad",
+    "no": "Helningsavvik fjernet",
+    "es": "Anomalia de inclinacion resuelta",
+    "da": "Haeldningsanomali ryddet",
+    "ru": "Anomaliya naklona sbroshena",
+    "pl": "Anomalia nachylenia usunieta",
+    "ko": "기울기 이상 해제됨"
+  }
 }

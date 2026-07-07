@@ -26,6 +26,8 @@
     "alarm_tank_empty": "Tank Empty",
     "alarm_temperature_anomaly": "Temperature Anomaly",
     "measure_gas_level": "Gas Level",
+    "measure_gas_level_delta": "Gas Level Change",
+    "measure_gas_level_delta_hour": "Gas Change Rate",
     "measure_gas_remaining": "Gas Remaining",
     "measure_rssi": "RSSI"
   }

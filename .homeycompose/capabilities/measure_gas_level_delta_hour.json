@@ -1,0 +1,38 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Gas Change Rate",
+    "nl": "Gasverbruik tempo",
+    "de": "Gas Anderungsrate",
+    "fr": "Taux de variation du gaz",
+    "it": "Velocita variazione gas",
+    "sv": "Gasforandring per timme",
+    "no": "Gassendring per time",
+    "es": "Tasa de cambio de gas",
+    "da": "Gasændring pr. time",
+    "ru": "Skorost izmeneniya gaza",
+    "pl": "Tempo zmiany gazu",
+    "ko": "가스 변화율"
+  },
+  "units": {
+    "en": "%/h",
+    "nl": "%/u",
+    "de": "%/h",
+    "fr": "%/h",
+    "it": "%/h",
+    "sv": "%/h",
+    "no": "%/t",
+    "es": "%/h",
+    "da": "%/t",
+    "ru": "%/ch",
+    "pl": "%/h",
+    "ko": "%/h"
+  },
+  "decimals": 2,
+  "min": -1000,
+  "max": 1000,
+  "insights": true,
+  "getable": true,
+  "setable": false,
+  "icon": "/assets/capability_gas_delta.svg"
+}

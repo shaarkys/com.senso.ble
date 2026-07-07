@@ -1,0 +1,21 @@
+{
+  "type": "string",
+  "title": {
+    "en": "Update Method",
+    "nl": "Updatemethode",
+    "de": "Aktualisierungsmethode",
+    "fr": "Methode de mise a jour",
+    "it": "Metodo di aggiornamento",
+    "sv": "Uppdateringsmetod",
+    "no": "Oppdateringsmetode",
+    "es": "Metodo de actualizacion",
+    "da": "Opdateringsmetode",
+    "ru": "Metod obnovleniya",
+    "pl": "Metoda aktualizacji",
+    "ko": "업데이트 방식"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/capability_update_method.svg"
+}

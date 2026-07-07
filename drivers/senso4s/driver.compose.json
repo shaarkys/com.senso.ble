@@ -23,7 +23,10 @@
     "alarm_device_error",
     "measure_gas_level",
     "measure_gas_remaining",
-    "measure_rssi"
+    "measure_gas_level_delta",
+    "measure_gas_level_delta_hour",
+    "measure_rssi",
+    "meter_update_method"
   ],
   "platforms": [
     "local"
