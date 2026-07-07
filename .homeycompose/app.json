@@ -50,5 +50,28 @@
     "name": "Bretislav Kubesa",
     "email": "bretislav.kubesa@gmail.com"
   },
-  "brandColor": "#1F7E68"
+  "contributors": {
+    "developers": [
+      {
+        "name": "Ken Sanislo"
+      }
+    ]
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "bkubesa"
+      }
+    }
+  },
+  "brandColor": "#1F7E68",
+  "tags": {
+    "en": [
+      "gas cylinder ble"
+    ]
+  },
+  "source": "https://github.com/shaarkys/com.senso.ble",
+  "bugs": {
+    "url": "https://github.com/shaarkys/com.senso.ble/issues"
+  }
 }
