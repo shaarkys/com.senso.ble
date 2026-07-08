@@ -13,5 +13,8 @@
   },
   "1.0.4": {
     "en": "Added Senso4s Basic/Plus BLE support with advertisement-based gas level updates, active reads for configuration and Plus temperature."
+  },
+  "1.0.5": {
+    "en": "Updates as per Athom's guidelines"
   }
 }
