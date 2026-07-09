@@ -19,5 +19,11 @@
   },
   "1.0.6": {
     "en": "Updates as per Athom's guidelines"
+  },
+  "1.0.7": {
+    "en": "Minor code/TS cleanup, added new trigger for gas level change, removed d…"
+  },
+  "1.0.8": {
+    "en": "Minor code/TS cleanup, added new trigger for gas level change, removed duplicate battery alarm capability"
   }
 }
