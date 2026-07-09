@@ -16,7 +16,6 @@
   "class": "sensor",
   "capabilities": [
     "measure_battery",
-    "alarm_battery",
     "alarm_connectivity",
     "alarm_tank_empty",
     "alarm_needs_calibration",

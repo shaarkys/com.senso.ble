@@ -168,6 +168,61 @@
             "filter": "driver_id=senso4s"
           }
         ]
+      },
+      {
+        "id": "gas_level_changed",
+        "title": {
+          "en": "Gas level changed"
+        },
+        "tokens": [
+          {
+            "name": "gas_level",
+            "type": "number",
+            "title": {
+              "en": "Gas level"
+            },
+            "example": 70
+          },
+          {
+            "name": "previous_gas_level",
+            "type": "number",
+            "title": {
+              "en": "Previous gas level"
+            },
+            "example": 88
+          },
+          {
+            "name": "delta",
+            "type": "number",
+            "title": {
+              "en": "Change"
+            },
+            "example": -18
+          },
+          {
+            "name": "delta_per_hour",
+            "type": "number",
+            "title": {
+              "en": "Change per hour"
+            },
+            "example": -3.5
+          },
+          {
+            "name": "elapsed_hours",
+            "type": "number",
+            "title": {
+              "en": "Elapsed hours"
+            },
+            "example": 5.14
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=senso4s"
+          }
+        ]
       }
     ]
   },
@@ -190,7 +245,6 @@
       "class": "sensor",
       "capabilities": [
         "measure_battery",
-        "alarm_battery",
         "alarm_connectivity",
         "alarm_tank_empty",
         "alarm_needs_calibration",

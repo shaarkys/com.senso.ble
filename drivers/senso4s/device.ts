@@ -26,7 +26,6 @@ import {
 
 const REQUIRED_CAPABILITIES = [
   'measure_battery',
-  'alarm_battery',
   'alarm_connectivity',
   'alarm_tank_empty',
   'alarm_needs_calibration',
@@ -75,6 +74,11 @@ type BleAdvertisementLike = {
   connect(): Promise<unknown>;
 };
 
+function round(value: number, decimals: number): number {
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
+}
+
 module.exports = class Senso4sDevice extends Homey.Device {
   private advertisementTimer: NodeJS.Timeout | null = null;
   private connectionTimer: NodeJS.Timeout | null = null;
@@ -86,10 +90,14 @@ module.exports = class Senso4sDevice extends Homey.Device {
   private lastDecodedAdvertisementAt = 0;
   private lastHandledSubscriptionAdvertisementAt = 0;
   private lastHandledSubscriptionAdvertisementFingerprint: string | null = null;
+  private readonly deprecatedCapabilities = [
+    'alarm_battery',
+  ];
 
   async onInit() {
     this.log('Senso4s device initialized', this.getData());
     await this.ensureCapabilities();
+    await this.removeDeprecatedCapabilities();
     const store = this.getStore();
     if (typeof store.isPlusModel === 'boolean') {
       await this.syncPlusModelCapabilities(store.isPlusModel);
@@ -136,6 +144,15 @@ module.exports = class Senso4sDevice extends Homey.Device {
     for (const capability of REQUIRED_CAPABILITIES) {
       if (!this.hasCapability(capability)) {
         await this.addCapability(capability);
+      }
+    }
+  }
+
+  private async removeDeprecatedCapabilities() {
+    for (const capability of this.deprecatedCapabilities) {
+      if (this.hasCapability(capability)) {
+        this.log(`Removing deprecated capability ${capability}`);
+        await this.removeCapability(capability);
       }
     }
   }
@@ -379,7 +396,7 @@ module.exports = class Senso4sDevice extends Homey.Device {
         const level = interpretLevelByte(levelByte);
         this.log('Level decoded', JSON.stringify({
           rawByte: `0x${levelByte.toString(16).padStart(2, '0')}`,
-          ...this.summarizeLevel(level),
+          level: this.summarizeLevel(level),
         }));
         await this.applyLevelInterpretation(level);
       }
@@ -546,7 +563,9 @@ module.exports = class Senso4sDevice extends Homey.Device {
     await this.setStoreValue('errorDescription', parsed.errorCode ? ERROR_DESCRIPTIONS[parsed.errorCode] : null).catch(() => undefined);
 
     await this.setCapabilityValueIfChanged('measure_battery', parsed.batteryPercent);
-    await this.setCapabilityValueIfChanged('alarm_battery', parsed.batteryPercent <= 10);
+    if (parsed.errorCode === 0xfe) {
+      await this.setCapabilityValueIfChanged('measure_battery', 0);
+    }
     await this.applyLevelInterpretation(parsed);
   }
 
@@ -559,9 +578,6 @@ module.exports = class Senso4sDevice extends Homey.Device {
   }) {
     await this.setCapabilityValueIfChanged('alarm_needs_calibration', level.needsCalibration);
     await this.setCapabilityValueIfChanged('alarm_device_error', level.hasError);
-    if (level.errorCode === 0xfe) {
-      await this.setCapabilityValueIfChanged('alarm_battery', true);
-    }
 
     if (this.hasCapability('alarm_senso_anomaly')) {
       await this.setCapabilityValueIfChanged('alarm_senso_anomaly', level.anomalies.length > 0);
@@ -617,6 +633,13 @@ module.exports = class Senso4sDevice extends Homey.Device {
 
     await this.setCapabilityValueIfChanged('measure_gas_level_delta', delta);
     await this.setCapabilityValueIfChanged('measure_gas_level_delta_hour', round(deltaPerHour, 2));
+    await this.triggerGasLevelChangedFlow({
+      gas_level: gasLevelPercent,
+      previous_gas_level: previousGasLevel,
+      delta,
+      delta_per_hour: round(deltaPerHour, 2),
+      elapsed_hours: round(elapsedHours, 2),
+    });
     await this.setStoreValue('lastGasLevelPercent', gasLevelPercent).catch(() => undefined);
     await this.setStoreValue('lastGasLevelAt', now).catch(() => undefined);
   }
@@ -631,13 +654,19 @@ module.exports = class Senso4sDevice extends Homey.Device {
   }
 
   private summarizeParsedAdvertisement(parsed: NonNullable<ReturnType<typeof parseAdvertisement>>) {
+    const level = this.summarizeLevel(parsed);
     return {
       manufacturerId: parsed.manufacturerId ? `0x${parsed.manufacturerId.toString(16).padStart(4, '0')}` : null,
       macAddress: parsed.macAddress,
       model: parsed.isPlusModel ? 'Plus' : 'Basic',
       usageMode: USAGE_MODE_NAMES[parsed.usageMode],
       batteryPercent: parsed.batteryPercent,
-      ...this.summarizeLevel(parsed),
+      gasLevelPercent: level.gasLevelPercent,
+      needsCalibration: level.needsCalibration,
+      hasError: level.hasError,
+      errorCode: level.errorCode,
+      errorDescription: level.errorDescription,
+      anomalies: level.anomalies,
     };
   }
 
@@ -713,9 +742,14 @@ module.exports = class Senso4sDevice extends Homey.Device {
     await this.homey.flow.getDeviceTriggerCard(triggerId).trigger(this, {}, {}).catch(this.error);
   }
 
-};
+  private async triggerGasLevelChangedFlow(tokens: {
+    gas_level: number;
+    previous_gas_level: number;
+    delta: number;
+    delta_per_hour: number;
+    elapsed_hours: number;
+  }) {
+    await this.homey.flow.getDeviceTriggerCard('gas_level_changed').trigger(this, tokens, {}).catch(this.error);
+  }
 
-function round(value: number, decimals: number): number {
-  const factor = 10 ** decimals;
-  return Math.round(value * factor) / factor;
-}
+};

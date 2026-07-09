@@ -116,7 +116,7 @@ export function parseAdvertisement(advertisement: {
   serviceUuids?: string[];
   manufacturerData?: Buffer;
 }): Senso4sAdvertisementData | null {
-  const manufacturerData = advertisement.manufacturerData;
+  const { manufacturerData } = advertisement;
   if (!manufacturerData || manufacturerData.length < 11) {
     return null;
   }
@@ -165,7 +165,10 @@ export function parseAdvertisement(advertisement: {
   }
 
   return {
-    ...level,
+    gasLevelPercent: level.gasLevelPercent,
+    needsCalibration: level.needsCalibration,
+    hasError: level.hasError,
+    errorCode: level.errorCode,
     anomalies,
     manufacturerId,
     macAddress: Array.from(macBytes).map((byte) => byte.toString(16).padStart(2, '0').toUpperCase()).join(':'),

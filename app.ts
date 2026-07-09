@@ -8,4 +8,4 @@ module.exports = class Senso4sApp extends Homey.App {
     this.log('Senso4s app has been initialized');
   }
 
-}
+};

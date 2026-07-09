@@ -41,64 +41,69 @@ module.exports = class Senso4sDriver extends Homey.Driver {
     }>();
 
     for (const advertisement of advertisements.filter(isSenso4sAdvertisement)) {
-        const parsed = parseAdvertisement(advertisement);
-        if (!parsed) {
-          this.log('Skipping Senso4s advertisement without manufacturer data during pairing', JSON.stringify({
-            uuid: advertisement.uuid,
-            address: advertisement.address,
-            localName: advertisement.localName,
-            rssi: advertisement.rssi,
-            serviceUuids: advertisement.serviceUuids,
-          }));
-          continue;
-        }
-
-        const address = (advertisement.address || parsed?.macAddress || advertisement.uuid).toUpperCase();
-        const name = parsed
-          ? `Senso4s ${parsed.isPlusModel ? 'Plus' : 'Basic'} (${address})`
-          : `Senso4s (${address})`;
-
-        this.log(
-          'Senso4s advertisement',
-          JSON.stringify({
-            uuid: advertisement.uuid,
-            address: advertisement.address,
-            localName: advertisement.localName,
-            rssi: advertisement.rssi,
-            serviceUuids: advertisement.serviceUuids,
-            manufacturerData: advertisement.manufacturerData?.toString('hex') || null,
-            decoded: parsed ? summarizeParsedAdvertisement(parsed) : null,
-          }),
-        );
-
-        const device = {
-          name,
-          data: {
-            id: address,
-          },
-          settings: {
-            connection_interval_minutes: DEFAULT_CONNECTION_INTERVAL_MINUTES,
-            gas_capacity_kg: DEFAULT_GAS_CAPACITY_KG,
-            low_level_threshold: DEFAULT_LOW_LEVEL_THRESHOLD,
-          },
-          store: {
-            peripheralUuid: advertisement.uuid,
-            address,
-            manufacturerId: parsed.manufacturerId,
-            macAddress: parsed.macAddress,
-            isPlusModel: parsed.isPlusModel,
-            usageMode: USAGE_MODE_NAMES[parsed.usageMode],
-          },
+      const parsed = parseAdvertisement(advertisement);
+      if (!parsed) {
+        this.log('Skipping Senso4s advertisement without manufacturer data during pairing', JSON.stringify({
+          uuid: advertisement.uuid,
+          address: advertisement.address,
+          localName: advertisement.localName,
           rssi: advertisement.rssi,
-        };
+          serviceUuids: advertisement.serviceUuids,
+        }));
+        continue;
+      }
 
-        const existing = devices.get(address);
-        if (!existing || advertisement.rssi > existing.rssi) {
-          devices.set(address, device);
-        }
+      const address = (advertisement.address || parsed?.macAddress || advertisement.uuid).toUpperCase();
+      const name = parsed
+        ? `Senso4s ${parsed.isPlusModel ? 'Plus' : 'Basic'} (${address})`
+        : `Senso4s (${address})`;
+
+      this.log(
+        'Senso4s advertisement',
+        JSON.stringify({
+          uuid: advertisement.uuid,
+          address: advertisement.address,
+          localName: advertisement.localName,
+          rssi: advertisement.rssi,
+          serviceUuids: advertisement.serviceUuids,
+          manufacturerData: advertisement.manufacturerData?.toString('hex') || null,
+          decoded: parsed ? summarizeParsedAdvertisement(parsed) : null,
+        }),
+      );
+
+      const device = {
+        name,
+        data: {
+          id: address,
+        },
+        settings: {
+          connection_interval_minutes: DEFAULT_CONNECTION_INTERVAL_MINUTES,
+          gas_capacity_kg: DEFAULT_GAS_CAPACITY_KG,
+          low_level_threshold: DEFAULT_LOW_LEVEL_THRESHOLD,
+        },
+        store: {
+          peripheralUuid: advertisement.uuid,
+          address,
+          manufacturerId: parsed.manufacturerId,
+          macAddress: parsed.macAddress,
+          isPlusModel: parsed.isPlusModel,
+          usageMode: USAGE_MODE_NAMES[parsed.usageMode],
+        },
+        rssi: advertisement.rssi,
+      };
+
+      const existing = devices.get(address);
+      if (!existing || advertisement.rssi > existing.rssi) {
+        devices.set(address, device);
+      }
     }
 
-    return Array.from(devices.values()).map(({ rssi, ...device }) => device);
+    return Array.from(devices.values()).map((device) => ({
+      name: device.name,
+      data: device.data,
+      settings: device.settings,
+      store: device.store,
+    }));
   }
 
 };
