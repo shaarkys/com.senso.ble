@@ -217,16 +217,20 @@ module.exports = class Senso4sDevice extends Homey.Device {
       return;
     }
 
-    const unsubscribe = await ble.subscribeToAdvertisements([SCAN_FILTER_UUID], async (advertisement) => {
-      if (!this.isAdvertisementForThisDevice(advertisement)) {
-        return;
-      }
+    try {
+      const unsubscribe = await ble.subscribeToAdvertisements([SCAN_FILTER_UUID], async (advertisement) => {
+        if (!this.isAdvertisementForThisDevice(advertisement)) {
+          return;
+        }
 
-      await this.handleAdvertisement(advertisement, 'subscription');
-    });
+        await this.handleAdvertisement(advertisement, 'subscription');
+      });
 
-    this.unsubscribeAdvertisements = unsubscribe;
-    this.log('Subscribed to Senso4s BLE advertisements');
+      this.unsubscribeAdvertisements = unsubscribe;
+      this.log('Subscribed to Senso4s BLE advertisements');
+    } catch (error) {
+      this.log('BLE advertisement subscription failed, using find/discover fallback', error);
+    }
   }
 
   private async stopAdvertisementSubscription() {
