@@ -25,5 +25,8 @@
   },
   "1.0.8": {
     "en": "Minor code/TS cleanup, added new trigger for gas level change, removed duplicate battery alarm capability"
+  },
+  "1.0.9": {
+    "en": "Fixed Senso4s devices becoming unavailable on Homey SHS/Homey Bridge when BLE advertisement subscription fails."
   }
 }
