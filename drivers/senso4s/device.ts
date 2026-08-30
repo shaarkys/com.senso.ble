@@ -47,6 +47,8 @@ const PLUS_MODEL_CAPABILITIES = [
 ];
 
 const MIN_ACTIVE_CONNECTION_RSSI = -85;
+const ACTIVE_READ_TIMEOUT_MS = 45 * 1000;
+const BLE_CLEANUP_TIMEOUT_MS = 5 * 1000;
 
 const TRUE_ALARM_TRIGGER_BY_CAPABILITY: Record<string, string> = {
   alarm_tank_empty: 'tank_empty',
@@ -83,7 +85,12 @@ module.exports = class Senso4sDevice extends Homey.Device {
   private advertisementTimer: NodeJS.Timeout | null = null;
   private connectionTimer: NodeJS.Timeout | null = null;
   private unsubscribeAdvertisements: (() => void | Promise<void>) | null = null;
-  private isUpdating = false;
+  private activeReadOperation: Promise<void> | null = null;
+  private activeReadAttemptId = 0;
+  private activeReadCancellation: { attemptId: number; cancel: (reason: string) => void } | null = null;
+  private activePeripheral: { attemptId: number; peripheral: Homey.BlePeripheral } | null = null;
+  private shutdownOperation: Promise<void> | null = null;
+  private shuttingDown = false;
   private gasCapacityKg = DEFAULT_GAS_CAPACITY_KG;
   private lowLevelThreshold = DEFAULT_LOW_LEVEL_THRESHOLD;
   private connectionIntervalMinutes = DEFAULT_CONNECTION_INTERVAL_MINUTES;
@@ -104,8 +111,17 @@ module.exports = class Senso4sDevice extends Homey.Device {
     }
     this.loadSettings();
     await this.startAdvertisementSubscription();
+    if (this.shuttingDown) {
+      return;
+    }
     await this.updateFromAdvertisement();
+    if (this.shuttingDown) {
+      return;
+    }
     await this.updateFromConnection();
+    if (this.shuttingDown) {
+      return;
+    }
     this.startTimers();
   }
 
@@ -136,8 +152,11 @@ module.exports = class Senso4sDevice extends Homey.Device {
 
   async onDeleted() {
     this.log('Senso4s device has been deleted');
-    this.clearTimers();
-    await this.stopAdvertisementSubscription();
+    await this.shutdownBleLifecycle('device deleted');
+  }
+
+  async onUninit() {
+    await this.shutdownBleLifecycle('device uninitialized');
   }
 
   private async ensureCapabilities() {
@@ -180,6 +199,9 @@ module.exports = class Senso4sDevice extends Homey.Device {
 
   private startTimers() {
     this.clearTimers();
+    if (this.shuttingDown) {
+      return;
+    }
     this.advertisementTimer = this.homey.setInterval(
       () => this.updateFromAdvertisement().catch((error) => this.error('Advertisement update failed', error)),
       this.unsubscribeAdvertisements ? 10 * 60 * 1000 : 60 * 1000,
@@ -191,7 +213,7 @@ module.exports = class Senso4sDevice extends Homey.Device {
   }
 
   private async startAdvertisementSubscription() {
-    if (this.unsubscribeAdvertisements) {
+    if (this.shuttingDown || this.unsubscribeAdvertisements) {
       return;
     }
 
@@ -226,6 +248,15 @@ module.exports = class Senso4sDevice extends Homey.Device {
         await this.handleAdvertisement(advertisement, 'subscription');
       });
 
+      if (this.shuttingDown) {
+        await this.settleWithTimeout(
+          Promise.resolve().then(() => unsubscribe()),
+          BLE_CLEANUP_TIMEOUT_MS,
+          'Late BLE advertisement unsubscription',
+        );
+        return;
+      }
+
       this.unsubscribeAdvertisements = unsubscribe;
       this.log('Subscribed to Senso4s BLE advertisements');
     } catch (error) {
@@ -240,7 +271,11 @@ module.exports = class Senso4sDevice extends Homey.Device {
 
     const unsubscribe = this.unsubscribeAdvertisements;
     this.unsubscribeAdvertisements = null;
-    await unsubscribe();
+    await this.settleWithTimeout(
+      Promise.resolve().then(() => unsubscribe()),
+      BLE_CLEANUP_TIMEOUT_MS,
+      'BLE advertisement unsubscription',
+    );
   }
 
   private clearTimers() {
@@ -342,111 +377,279 @@ module.exports = class Senso4sDevice extends Homey.Device {
   }
 
   private async updateFromConnection() {
-    if (this.isUpdating) {
+    if (this.shuttingDown) {
       return;
     }
 
-    this.isUpdating = true;
-    let peripheral: Awaited<ReturnType<Awaited<ReturnType<typeof this.findAdvertisement>>['connect']>> | null = null;
+    if (this.activeReadOperation) {
+      this.log('Active BLE read skipped because the previous operation is still running');
+      await this.activeReadOperation;
+      return;
+    }
+
+    const attemptId = ++this.activeReadAttemptId;
+    const operation = this.runActiveRead(attemptId);
+    this.activeReadOperation = operation;
 
     try {
-      const advertisement = await this.findAdvertisement();
-      this.log('Connecting for active BLE read', JSON.stringify({
-        uuid: advertisement.uuid,
-        address: advertisement.address,
-        rssi: advertisement.rssi,
-      }));
-
-      if (advertisement.rssi <= MIN_ACTIVE_CONNECTION_RSSI) {
-        this.log(`Skipping active BLE read because RSSI is too low (${advertisement.rssi} dBm); gas capacity remains ${this.gasCapacityKg} kg until config can be read`);
-        await this.setUpdateMethod(this.hasFreshDecodedAdvertisement()
-          ? 'Advertisements'
-          : 'Waiting for advertisement');
-        return;
+      await operation;
+    } finally {
+      if (this.activeReadOperation === operation) {
+        this.activeReadOperation = null;
       }
+    }
+  }
 
-      peripheral = await advertisement.connect();
-      await this.setCapabilityValueIfChanged('alarm_connectivity', false);
-      await this.setUpdateMethod('Active read');
+  private async runActiveRead(attemptId: number) {
+    let cancelAttempt: (reason: string) => void = () => undefined;
+    const cancellationPromise = new Promise<never>((_, reject) => {
+      cancelAttempt = (reason) => {
+        const error = new Error(reason) as Error & { code?: string };
+        error.code = 'BLE_ACTIVE_READ_CANCELLED';
+        reject(error);
+      };
+    });
+    this.activeReadCancellation = { attemptId, cancel: cancelAttempt };
 
-      const config = await peripheral.read(SERVICE_UUID, CHAR_CONFIG_UUID)
-        .then((data: Buffer) => {
-          const configValue = parseCylinderConfig(data);
-          this.log('Config characteristic', JSON.stringify({
-            uuid: CHAR_CONFIG_UUID,
-            raw: data.toString('hex'),
-            decoded: configValue ? {
-              emptyWeightKg: configValue.emptyWeightKg,
-              gasCapacityKg: configValue.gasCapacityKg,
-              usageMode: USAGE_MODE_NAMES[configValue.usageMode],
-            } : null,
-          }));
-          return configValue;
-        })
-        .catch((error: Error) => {
-          this.log('Could not read Senso4s config characteristic', error.message);
-          return null;
-        });
+    let timeout: NodeJS.Timeout | null = null;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeout = this.homey.setTimeout(() => {
+        if (this.activeReadAttemptId === attemptId) {
+          this.activeReadAttemptId += 1;
+        }
+        const error = new Error(`Active BLE read timed out after ${ACTIVE_READ_TIMEOUT_MS / 1000} seconds`) as Error & { code?: string };
+        error.code = 'BLE_ACTIVE_READ_TIMEOUT';
+        reject(error);
+      }, ACTIVE_READ_TIMEOUT_MS);
+    });
 
-      if (config?.gasCapacityKg) {
-        this.gasCapacityKg = config.gasCapacityKg;
-        await this.setSettings({ gas_capacity_kg: config.gasCapacityKg }).catch((error: Error) => {
-          this.log('Could not persist gas capacity setting', error.message);
-        });
+    try {
+      await Promise.race([
+        this.performActiveRead(attemptId),
+        cancellationPromise,
+        timeoutPromise,
+      ]);
+    } catch (error) {
+      const activeReadError = error as Error & { code?: string };
+      if (activeReadError.code === 'BLE_ACTIVE_READ_CANCELLED') {
+        this.log(`Active BLE read cancelled: ${activeReadError.message}`);
+      } else {
+        this.error('Could not connect to Senso4s device', activeReadError);
+        await this.setCapabilityValueIfChanged('alarm_connectivity', true).catch(this.error);
       }
-
-      const levelByte = await this.readLevelByte(peripheral);
-      if (typeof levelByte === 'number') {
-        const level = interpretLevelByte(levelByte);
-        this.log('Level decoded', JSON.stringify({
-          rawByte: `0x${levelByte.toString(16).padStart(2, '0')}`,
-          level: this.summarizeLevel(level),
-        }));
-        await this.applyLevelInterpretation(level);
+    } finally {
+      if (timeout) {
+        this.homey.clearTimeout(timeout);
       }
-
-      if (this.getStore().isPlusModel === true) {
-        await this.readPlusTemperature(peripheral);
+      if (this.activeReadCancellation?.attemptId === attemptId) {
+        this.activeReadCancellation = null;
       }
+      await this.cleanupActiveConnection(attemptId, 'active BLE read finished');
+    }
+  }
 
-      const setupDate = await peripheral.read(SERVICE_UUID, CHAR_SETUP_DATE_UUID)
-        .then((data: Buffer) => {
-          const setupDateValue = parseSetupDate(data);
-          this.log('Setup date characteristic', JSON.stringify({
-            uuid: CHAR_SETUP_DATE_UUID,
-            raw: data.toString('hex'),
-            decoded: setupDateValue?.toISOString() || null,
-          }));
-          return setupDateValue;
-        })
-        .catch((error: Error) => {
-          this.log('Could not read Senso4s setup date characteristic', error.message);
-          return null;
-        });
+  private async performActiveRead(attemptId: number) {
+    const advertisement = await this.findAdvertisement();
+    this.assertActiveReadAttempt(attemptId);
+    this.log('Connecting for active BLE read', JSON.stringify({
+      uuid: advertisement.uuid,
+      address: advertisement.address,
+      rssi: advertisement.rssi,
+    }));
 
-      if (setupDate) {
-        const history = await this.readHistory(peripheral, setupDate);
-        const latest = history[history.length - 1];
-        this.log('History decoded', JSON.stringify({
-          records: history.length,
-          latest: latest ? {
-            remainingGasKg: latest.remainingGasKg,
-            timestamp: latest.timestamp.toISOString(),
+    if (advertisement.rssi <= MIN_ACTIVE_CONNECTION_RSSI) {
+      this.log(`Skipping active BLE read because RSSI is too low (${advertisement.rssi} dBm); gas capacity remains ${this.gasCapacityKg} kg until config can be read`);
+      await this.setUpdateMethod(this.hasFreshDecodedAdvertisement()
+        ? 'Advertisements'
+        : 'Waiting for advertisement');
+      this.assertActiveReadAttempt(attemptId);
+      return;
+    }
+
+    const peripheral = await advertisement.connect();
+    if (!this.isActiveReadAttempt(attemptId)) {
+      await this.disconnectPeripheral(peripheral, 'late active BLE connection');
+      this.assertActiveReadAttempt(attemptId);
+    }
+    this.activePeripheral = { attemptId, peripheral };
+
+    await this.setCapabilityValueIfChanged('alarm_connectivity', false);
+    this.assertActiveReadAttempt(attemptId);
+    await this.setUpdateMethod('Active read');
+    this.assertActiveReadAttempt(attemptId);
+
+    const config = await peripheral.read(SERVICE_UUID, CHAR_CONFIG_UUID)
+      .then((data: Buffer) => {
+        const configValue = parseCylinderConfig(data);
+        this.log('Config characteristic', JSON.stringify({
+          uuid: CHAR_CONFIG_UUID,
+          raw: data.toString('hex'),
+          decoded: configValue ? {
+            emptyWeightKg: configValue.emptyWeightKg,
+            gasCapacityKg: configValue.gasCapacityKg,
+            usageMode: USAGE_MODE_NAMES[configValue.usageMode],
           } : null,
         }));
-        if (latest) {
-          await this.setCapabilityValueIfChanged('measure_gas_remaining', round(latest.remainingGasKg, 2));
-        }
-      }
-    } catch (error) {
-      this.error('Could not connect to Senso4s device', error);
-      await this.setCapabilityValueIfChanged('alarm_connectivity', true).catch(this.error);
-    } finally {
-      if (peripheral) {
-        await peripheral.disconnect().catch((error: Error) => this.log('Disconnect failed', error.message));
-      }
-      this.isUpdating = false;
+        return configValue;
+      })
+      .catch((error: Error) => {
+        this.log('Could not read Senso4s config characteristic', error.message);
+        return null;
+      });
+    this.assertActiveReadAttempt(attemptId);
+
+    if (config?.gasCapacityKg) {
+      this.gasCapacityKg = config.gasCapacityKg;
+      await this.setSettings({ gas_capacity_kg: config.gasCapacityKg }).catch((error: Error) => {
+        this.log('Could not persist gas capacity setting', error.message);
+      });
+      this.assertActiveReadAttempt(attemptId);
     }
+
+    const levelByte = await this.readLevelByte(peripheral);
+    this.assertActiveReadAttempt(attemptId);
+    if (typeof levelByte === 'number') {
+      const level = interpretLevelByte(levelByte);
+      this.log('Level decoded', JSON.stringify({
+        rawByte: `0x${levelByte.toString(16).padStart(2, '0')}`,
+        level: this.summarizeLevel(level),
+      }));
+      await this.applyLevelInterpretation(level);
+      this.assertActiveReadAttempt(attemptId);
+    }
+
+    if (this.getStore().isPlusModel === true) {
+      await this.readPlusTemperature(peripheral);
+      this.assertActiveReadAttempt(attemptId);
+    }
+
+    const setupDate = await peripheral.read(SERVICE_UUID, CHAR_SETUP_DATE_UUID)
+      .then((data: Buffer) => {
+        const setupDateValue = parseSetupDate(data);
+        this.log('Setup date characteristic', JSON.stringify({
+          uuid: CHAR_SETUP_DATE_UUID,
+          raw: data.toString('hex'),
+          decoded: setupDateValue?.toISOString() || null,
+        }));
+        return setupDateValue;
+      })
+      .catch((error: Error) => {
+        this.log('Could not read Senso4s setup date characteristic', error.message);
+        return null;
+      });
+    this.assertActiveReadAttempt(attemptId);
+
+    if (setupDate) {
+      const history = await this.readHistory(peripheral, setupDate);
+      this.assertActiveReadAttempt(attemptId);
+      const latest = history[history.length - 1];
+      this.log('History decoded', JSON.stringify({
+        records: history.length,
+        latest: latest ? {
+          remainingGasKg: latest.remainingGasKg,
+          timestamp: latest.timestamp.toISOString(),
+        } : null,
+      }));
+      if (latest) {
+        await this.setCapabilityValueIfChanged('measure_gas_remaining', round(latest.remainingGasKg, 2));
+        this.assertActiveReadAttempt(attemptId);
+      }
+    }
+  }
+
+  private isActiveReadAttempt(attemptId: number) {
+    return !this.shuttingDown && this.activeReadAttemptId === attemptId;
+  }
+
+  private assertActiveReadAttempt(attemptId: number) {
+    if (this.isActiveReadAttempt(attemptId)) {
+      return;
+    }
+
+    const error = new Error('Active BLE read is no longer current') as Error & { code?: string };
+    error.code = 'BLE_ACTIVE_READ_CANCELLED';
+    throw error;
+  }
+
+  private cancelActiveRead(reason: string) {
+    const cancellation = this.activeReadCancellation;
+    if (!cancellation) {
+      return;
+    }
+
+    if (this.activeReadAttemptId === cancellation.attemptId) {
+      this.activeReadAttemptId += 1;
+    }
+    this.activeReadCancellation = null;
+    cancellation.cancel(reason);
+  }
+
+  private async cleanupActiveConnection(attemptId: number, reason: string) {
+    const ownedPeripheral = this.activePeripheral;
+    if (!ownedPeripheral || ownedPeripheral.attemptId !== attemptId) {
+      return;
+    }
+
+    this.activePeripheral = null;
+    await this.disconnectPeripheral(ownedPeripheral.peripheral, reason);
+  }
+
+  private async disconnectPeripheral(peripheral: Homey.BlePeripheral, reason: string) {
+    this.log(`Disconnecting Senso4s BLE peripheral: ${reason}`);
+    await this.settleWithTimeout(
+      Promise.resolve().then(() => peripheral.disconnect()),
+      BLE_CLEANUP_TIMEOUT_MS,
+      'BLE peripheral disconnect',
+    );
+  }
+
+  private async settleWithTimeout(operation: Promise<unknown>, timeoutMs: number, description: string) {
+    let timeout: NodeJS.Timeout | null = null;
+    const timeoutPromise = new Promise<void>((resolve) => {
+      timeout = this.homey.setTimeout(() => {
+        this.log(`${description} did not finish within ${timeoutMs / 1000} seconds; continuing cleanup`);
+        resolve();
+      }, timeoutMs);
+    });
+
+    await Promise.race([
+      operation.catch((error: Error) => {
+        this.log(`${description} failed`, error.message);
+      }),
+      timeoutPromise,
+    ]);
+
+    if (timeout) {
+      this.homey.clearTimeout(timeout);
+    }
+  }
+
+  private async shutdownBleLifecycle(reason: string) {
+    if (this.shutdownOperation) {
+      return this.shutdownOperation;
+    }
+
+    this.shuttingDown = true;
+    const { activeReadOperation } = this;
+    this.cancelActiveRead(reason);
+    this.clearTimers();
+
+    this.shutdownOperation = (async () => {
+      await this.stopAdvertisementSubscription().catch((error: Error) => {
+        this.log('BLE advertisement cleanup failed', error.message);
+      });
+      const ownedAttemptId = this.activePeripheral?.attemptId;
+      if (typeof ownedAttemptId === 'number') {
+        await this.cleanupActiveConnection(ownedAttemptId, reason);
+      }
+      if (activeReadOperation) {
+        await activeReadOperation.catch((error: Error) => {
+          this.log('Active BLE read ended during shutdown', error.message);
+        });
+      }
+    })();
+
+    return this.shutdownOperation;
   }
 
   private async readLevelByte(peripheral: Awaited<ReturnType<Awaited<ReturnType<typeof this.findAdvertisement>>['connect']>>) {
@@ -471,24 +674,38 @@ module.exports = class Senso4sDevice extends Homey.Device {
     const characteristic = await service.getCharacteristic(CHAR_LEVEL_UUID);
 
     return new Promise<number | null>((resolve) => {
-      const timeout = this.homey.setTimeout(async () => {
-        await characteristic.unsubscribeFromNotifications().catch(() => undefined);
-        resolve(null);
-      }, 5000);
+      let settled = false;
+      const timeout = this.homey.setTimeout(() => finish(null), 5000);
+      const finish = (value: number | null) => {
+        if (settled) {
+          return;
+        }
 
-      characteristic.subscribeToNotifications(async (data: Buffer) => {
+        settled = true;
+        this.homey.clearTimeout(timeout);
+        this.settleWithTimeout(
+          Promise.resolve().then(() => characteristic.unsubscribeFromNotifications()),
+          BLE_CLEANUP_TIMEOUT_MS,
+          'Level notification cleanup',
+        ).then(
+          () => resolve(value),
+          (error: Error) => {
+            this.error('Level notification cleanup failed', error);
+            resolve(value);
+          },
+        );
+      };
+
+      characteristic.subscribeToNotifications((data: Buffer) => {
         if (data.length > 0) {
           this.log('Level notification', JSON.stringify({
             uuid: CHAR_LEVEL_UUID,
             raw: data.toString('hex'),
           }));
-          this.homey.clearTimeout(timeout);
-          await characteristic.unsubscribeFromNotifications().catch(() => undefined);
-          resolve(data[0]);
+          finish(data[0]);
         }
       }).catch(() => {
-        this.homey.clearTimeout(timeout);
-        resolve(null);
+        finish(null);
       });
     });
   }
@@ -521,24 +738,45 @@ module.exports = class Senso4sDevice extends Homey.Device {
 
     return new Promise<ReturnType<typeof parseHistoryData>>((resolve) => {
       let quietTimer: NodeJS.Timeout | null = null;
-      const finish = async () => {
+      let settled = false;
+      let timeout: NodeJS.Timeout | null = null;
+      const finish = () => {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
         if (quietTimer) {
           this.homey.clearTimeout(quietTimer);
           quietTimer = null;
         }
-        await characteristic.unsubscribeFromNotifications().catch(() => undefined);
+        if (timeout) {
+          this.homey.clearTimeout(timeout);
+          timeout = null;
+        }
         const raw = Buffer.concat(chunks);
         this.log('History characteristic raw', JSON.stringify({
           uuid: CHAR_HISTORY_UUID,
           bytes: raw.length,
           raw: raw.toString('hex'),
         }));
-        resolve(parseHistoryData(raw, setupDate));
+        const history = parseHistoryData(raw, setupDate);
+        this.settleWithTimeout(
+          Promise.resolve().then(() => characteristic.unsubscribeFromNotifications()),
+          BLE_CLEANUP_TIMEOUT_MS,
+          'History notification cleanup',
+        ).then(
+          () => resolve(history),
+          (error: Error) => {
+            this.error('History notification cleanup failed', error);
+            resolve(history);
+          },
+        );
       };
 
-      const timeout = this.homey.setTimeout(finish, 5000);
+      timeout = this.homey.setTimeout(finish, 5000);
       characteristic.subscribeToNotifications((data: Buffer) => {
-        if (data.length > 0) {
+        if (!settled && data.length > 0) {
           this.log('History notification chunk', JSON.stringify({
             uuid: CHAR_HISTORY_UUID,
             raw: data.toString('hex'),
@@ -548,13 +786,16 @@ module.exports = class Senso4sDevice extends Homey.Device {
             this.homey.clearTimeout(quietTimer);
           }
           quietTimer = this.homey.setTimeout(() => {
-            this.homey.clearTimeout(timeout);
-            finish().catch((error) => this.error('History finish failed', error));
+            finish();
           }, 1000);
         }
-      }).then(() => characteristic.write(Buffer.from([0x00, 0x00]))).catch(() => {
-        this.homey.clearTimeout(timeout);
-        resolve([]);
+      }).then(() => {
+        if (!settled) {
+          return characteristic.write(Buffer.from([0x00, 0x00]));
+        }
+        return undefined;
+      }).catch(() => {
+        finish();
       });
     });
   }
