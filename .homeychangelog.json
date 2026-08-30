@@ -28,5 +28,8 @@
   },
   "1.0.9": {
     "en": "Fixed Senso4s devices becoming unavailable on Homey SHS/Homey Bridge when BLE advertisement subscription fails."
+  },
+  "1.0.10": {
+    "en": "Fixed stalled Senso4s BLE reads and shutdown races that could leave sensors connected and block future active updates."
   }
 }
