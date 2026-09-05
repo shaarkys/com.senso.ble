@@ -84,7 +84,8 @@ function round(value: number, decimals: number): number {
 module.exports = class Senso4sDevice extends Homey.Device {
   private advertisementTimer: NodeJS.Timeout | null = null;
   private connectionTimer: NodeJS.Timeout | null = null;
-  private unsubscribeAdvertisements: (() => void | Promise<void>) | null = null;
+  private advertisementSubscription: { uuid: string; unsubscribe: () => Promise<void> } | null = null;
+  private advertisementSubscriptionOperation: Promise<void> | null = null;
   private activeReadOperation: Promise<void> | null = null;
   private activeReadAttemptId = 0;
   private activeReadCancellation: { attemptId: number; cancel: (reason: string) => void } | null = null;
@@ -204,7 +205,7 @@ module.exports = class Senso4sDevice extends Homey.Device {
     }
     this.advertisementTimer = this.homey.setInterval(
       () => this.updateFromAdvertisement().catch((error) => this.error('Advertisement update failed', error)),
-      this.unsubscribeAdvertisements ? 10 * 60 * 1000 : 60 * 1000,
+      this.advertisementSubscription ? 10 * 60 * 1000 : 60 * 1000,
     );
     this.connectionTimer = this.homey.setInterval(
       () => this.updateFromConnection().catch((error) => this.error('Connected update failed', error)),
@@ -213,7 +214,12 @@ module.exports = class Senso4sDevice extends Homey.Device {
   }
 
   private async startAdvertisementSubscription() {
-    if (this.shuttingDown || this.unsubscribeAdvertisements) {
+    if (this.shuttingDown || this.advertisementSubscription) {
+      return;
+    }
+
+    if (this.advertisementSubscriptionOperation) {
+      await this.advertisementSubscriptionOperation;
       return;
     }
 
@@ -229,48 +235,83 @@ module.exports = class Senso4sDevice extends Homey.Device {
 
     const ble = this.homey.ble as typeof this.homey.ble & {
       subscribeToAdvertisements?: (
-        serviceFilter: string[],
+        peripheralUuid: string,
         callback: (advertisement: BleAdvertisementLike) => void | Promise<void>,
-      ) => Promise<() => void | Promise<void>> | (() => void | Promise<void>);
+      ) => Promise<void>;
+      unsubscribeFromAdvertisements?: (peripheralUuid: string) => Promise<void>;
     };
+    const { subscribeToAdvertisements, unsubscribeFromAdvertisements } = ble;
 
-    if (typeof ble.subscribeToAdvertisements !== 'function') {
-      this.log('Homey reports ble-advertisements support, but subscribeToAdvertisements is unavailable in this SDK runtime');
+    if (typeof subscribeToAdvertisements !== 'function' || typeof unsubscribeFromAdvertisements !== 'function') {
+      this.log('BLE advertisement subscribe/unsubscribe methods are unavailable in this SDK runtime, using find/discover fallback');
       return;
     }
 
-    try {
-      const unsubscribe = await ble.subscribeToAdvertisements([SCAN_FILTER_UUID], async (advertisement) => {
-        if (!this.isAdvertisementForThisDevice(advertisement)) {
+    // Own the operation before resolving the peripheral or calling the SDK.
+    const operation = Promise.resolve().then(async () => {
+      try {
+        if (this.shuttingDown) {
           return;
         }
 
-        await this.handleAdvertisement(advertisement, 'subscription');
-      });
+        const storedUuid = this.getStore().peripheralUuid;
+        // Homey peripheral UUIDs are MAC addresses without separators, not service UUIDs.
+        const uuid = typeof storedUuid === 'string' && /^[0-9a-f]{12}$/i.test(storedUuid)
+          ? storedUuid
+          : (await this.findAdvertisement()).uuid;
+        if (typeof uuid !== 'string' || !/^[0-9a-f]{12}$/i.test(uuid)) {
+          throw new Error('Invalid BLE peripheral UUID: expected 12 hexadecimal characters from pairing or discovery');
+        }
+        if (this.shuttingDown) {
+          return;
+        }
 
-      if (this.shuttingDown) {
-        await this.settleWithTimeout(
-          Promise.resolve().then(() => unsubscribe()),
-          BLE_CLEANUP_TIMEOUT_MS,
-          'Late BLE advertisement unsubscription',
-        );
-        return;
+        await subscribeToAdvertisements.call(ble, uuid, async (advertisement) => {
+          if (this.shuttingDown || !this.isAdvertisementForThisDevice(advertisement)) {
+            return;
+          }
+
+          await this.handleAdvertisement(advertisement, 'subscription');
+        });
+
+        // The SDK resolves void; cleanup must use the exact UUID registered above.
+        const unsubscribe = () => unsubscribeFromAdvertisements.call(ble, uuid);
+        if (this.shuttingDown) {
+          await this.settleWithTimeout(
+            Promise.resolve().then(() => unsubscribe()),
+            BLE_CLEANUP_TIMEOUT_MS,
+            'Late BLE advertisement unsubscription',
+          );
+          return;
+        }
+
+        this.advertisementSubscription = { uuid, unsubscribe };
+        if (this.advertisementTimer) {
+          this.startTimers();
+        }
+        this.log('Subscribed to Senso4s BLE advertisements');
+      } catch (error) {
+        this.log('BLE advertisement subscription failed, using find/discover fallback', error);
       }
+    });
+    this.advertisementSubscriptionOperation = operation;
 
-      this.unsubscribeAdvertisements = unsubscribe;
-      this.log('Subscribed to Senso4s BLE advertisements');
-    } catch (error) {
-      this.log('BLE advertisement subscription failed, using find/discover fallback', error);
+    try {
+      await operation;
+    } finally {
+      if (this.advertisementSubscriptionOperation === operation) {
+        this.advertisementSubscriptionOperation = null;
+      }
     }
   }
 
   private async stopAdvertisementSubscription() {
-    if (!this.unsubscribeAdvertisements) {
+    if (!this.advertisementSubscription) {
       return;
     }
 
-    const unsubscribe = this.unsubscribeAdvertisements;
-    this.unsubscribeAdvertisements = null;
+    const { unsubscribe } = this.advertisementSubscription;
+    this.advertisementSubscription = null;
     await this.settleWithTimeout(
       Promise.resolve().then(() => unsubscribe()),
       BLE_CLEANUP_TIMEOUT_MS,
