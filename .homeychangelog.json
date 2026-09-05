@@ -31,5 +31,8 @@
   },
   "1.0.10": {
     "en": "Fixed stalled Senso4s BLE reads and shutdown races that could leave sensors connected and block future active updates."
+  },
+  "1.0.11": {
+    "en": "Fixed Senso4s BLE advertisement subscriptions to use the correct peripheral UUID and explicit unsubscription, while preserving polling fallback and safe shutdown cleanup."
   }
 }
