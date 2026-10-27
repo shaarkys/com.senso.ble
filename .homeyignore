@@ -1,1 +1,8 @@
 /tests/
+AGENTS.md
+TESTS/
+
+# AI development tooling
+graft/
+.graft/
+.ignore
